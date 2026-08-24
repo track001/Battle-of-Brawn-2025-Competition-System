@@ -1,11 +1,13 @@
 {
-  "name": "react-typescript",
+  "name": "battle-of-brawn-2025-competition-system",
   "version": "1.0.0",
-  "description": "React and TypeScript example starter project",
+  "homepage": "https://track001.github.io/Battle-of-Brawn-2025-Competition-System",
+  "description": "Competition scoring and operations platform developed for Battle of Brawn 2025.",
   "keywords": [
     "typescript",
     "react",
-    "starter"
+    "competition-scoring",
+    "automation"
   ],
   "main": "src/index.tsx",
   "dependencies": {
