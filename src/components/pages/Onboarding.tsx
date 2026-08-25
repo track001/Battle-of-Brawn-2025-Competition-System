@@ -2,12 +2,9 @@
 import React from "react";
 import Panel from "../Panel";
 import SectionShell from "../ui/SectionShell";
-import {
-  HOURS as HOURS_CONST,
-  HOUSEKEEPING as HK_CONST,
-} from "../../config/constants";
+import { HOURS as HOURS_CONST } from "../../config/constants";
 
-// Fallbacks to prevent runtime crashes if constants aren't defined
+// Fallback to prevent runtime crashes if HOURS isn't defined
 const HOURS = HOURS_CONST ?? {
   Monday: "10am–10pm",
   Tuesday: "6am–10pm",
@@ -18,7 +15,8 @@ const HOURS = HOURS_CONST ?? {
   Sunday: "12pm–8pm",
 };
 
-const HOUSEKEEPING = HK_CONST ?? {
+// Housekeeping values used by the onboarding page
+const HOUSEKEEPING = {
   billingRuns: "27th of each month",
   cleanersNights: ["Sunday", "Tuesday", "Thursday", "Friday"],
   cancelPolicy:
@@ -123,19 +121,21 @@ export default function Onboarding() {
             </ol>
           </Panel>
 
-          {/* Downloads sub-panel */}
           <Panel title="Downloads (reference copies)">
             <p className="muted small">
               These are placeholders under <code>/public/forms</code>. Swap the
               links with the Google Drive versions when ready.
             </p>
+
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               <a className="btn tiny" href="/forms/I-9.pdf" download>
                 Download I-9
               </a>
+
               <a className="btn tiny" href="/forms/W-4.pdf" download>
                 Download W-4
               </a>
+
               <a
                 className="btn tiny"
                 href="/forms/EmployeeAcknowledgement.pdf"
@@ -143,6 +143,7 @@ export default function Onboarding() {
               >
                 Acknowledgement
               </a>
+
               <a className="btn tiny" href="/forms/DirectDeposit.pdf" download>
                 Direct Deposit
               </a>
@@ -162,7 +163,7 @@ export default function Onboarding() {
               <li>Install mobile or desktop; set notifications.</li>
               <li>
                 Join relevant channels like <code>#desk-staff</code> or{" "}
-                <code> #coaching</code> .
+                <code>#coaching</code>.
               </li>
               <li>Use threads; post screenshots for drawer or timer issues.</li>
             </ul>
@@ -175,8 +176,8 @@ export default function Onboarding() {
               </li>
               <li>
                 Request time off in 7Shifts <i>and</i> log it (by creating an
-                all-day 'event') in the Google Calendar under{" "}
-                <b>“Staff Requested Time Off ”</b>
+                all-day event) in the Google Calendar under{" "}
+                <b>“Staff Requested Time Off”</b>.
               </li>
             </ul>
           </Panel>
@@ -217,8 +218,8 @@ export default function Onboarding() {
           <Panel title="Missed punch / wrong time">
             <ol>
               <li>
-                Message <b> Denver </b> or <b> Alex </b> with date, shift, and
-                what happened.
+                Message <b>Denver</b> or <b>Alex</b> with date, shift, and what
+                happened.
               </li>
             </ol>
           </Panel>
@@ -226,8 +227,8 @@ export default function Onboarding() {
           <Panel title="If your PIN doesn’t work">
             <ul>
               <li>
-                Confirm you’re on the timeclock screen (under{" "}
-                <b> Data Entry </b>).
+                Confirm you’re on the timeclock screen (under <b>Data Entry</b>
+                ).
               </li>
               <li>Retry your PIN carefully.</li>
               <li>Still not working? Contact Denver or Alex.</li>
@@ -261,7 +262,7 @@ export default function Onboarding() {
         </div>
       </section>
 
-      {/* {/* ===================== Shift Trading ===================== */}
+      {/* ===================== Shift Trading ===================== */}
       <section id="shift-trading">
         <h2>Shift Trading Policy</h2>
 
