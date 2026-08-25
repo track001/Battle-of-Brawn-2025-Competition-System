@@ -538,7 +538,6 @@ export default function FinalsTimer() {
       });
     }, 1000);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
   // beeps & time-up
@@ -553,7 +552,6 @@ export default function FinalsTimer() {
       setPhase("done");
       beepEnd();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, phase]);
 
   // strings
