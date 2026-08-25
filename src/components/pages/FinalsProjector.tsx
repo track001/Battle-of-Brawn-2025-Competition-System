@@ -331,7 +331,7 @@ const DeveloperPanel: React.FC<{
   filename?: string;
 }> = ({
   title = "Developer Script (Full Source, Finals Projector)",
-  path = "/FinalsProjector.ps1",
+  path = `${process.env.PUBLIC_URL}/FinalsProjector.ps1`,
   filename = "FinalsProjector.ps1",
 }) => {
   const [text, setText] = useState<string>("");
@@ -1103,7 +1103,7 @@ export default function FinalsProjector() {
           Developer: Download / View PowerShell build
         </h3>
         <p style={{ marginTop: 6 }}>
-          <a href="/FinalsProjector.ps1" download>
+          <a href={`${process.env.PUBLIC_URL}/FinalsProjector.ps1`} download>
             Download <code>FinalsProjector.ps1</code>
           </a>
         </p>
