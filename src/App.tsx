@@ -6,11 +6,10 @@ import { CONTACT } from "./config/constants";
 import DrawerCounter from "./components/pages/DrawerCounter";
 import FinalsProjector from "./components/pages/FinalsProjector";
 import FinalsTimer from "./components/pages/FinalsTimer";
-import RaffleGenerator from "./components/pages/RaffleGenerator"; // NEW
+import RaffleGenerator from "./components/pages/RaffleGenerator";
 
 // Lazy pages
 const Onboarding = lazy(() => import("./components/pages/Onboarding"));
-const ToolsWeUse = lazy(() => import("./components/pages/ToolsWeUse"));
 
 /**
  * ============================================================================
@@ -32,35 +31,49 @@ export default function App() {
     window.location.hash || "#drawer/overview"
   );
 
-  // keep hash state in sync with URL
+  // Keep hash state in sync with URL
   useEffect(() => {
     const onHash = () => setHash(window.location.hash || "#drawer/overview");
+
     window.addEventListener("hashchange", onHash);
+
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  // redirect bare routes to /overview
+  // Redirect bare routes to /overview
   useEffect(() => {
     const bare = new Set([
       "#drawer",
       "#finals",
       "#timer",
-      "#raffle", // NEW
+      "#raffle",
       "#onboarding",
-      "#tools",
     ]);
+
     if (bare.has(hash)) {
       window.location.hash = `${hash}/overview`;
     }
   }, [hash]);
 
-  // minimal router
+  // Minimal router
   const Page = (() => {
-    if (hash.startsWith("#drawer")) return <DrawerCounter />;
-    if (hash.startsWith("#finals")) return <FinalsProjector />;
-    if (hash.startsWith("#timer")) return <FinalsTimer />;
-    if (hash.startsWith("#raffle")) return <RaffleGenerator />; // NEW
-    if (hash.startsWith("#onboarding"))
+    if (hash.startsWith("#drawer")) {
+      return <DrawerCounter />;
+    }
+
+    if (hash.startsWith("#finals")) {
+      return <FinalsProjector />;
+    }
+
+    if (hash.startsWith("#timer")) {
+      return <FinalsTimer />;
+    }
+
+    if (hash.startsWith("#raffle")) {
+      return <RaffleGenerator />;
+    }
+
+    if (hash.startsWith("#onboarding")) {
       return (
         <Suspense
           fallback={
@@ -72,18 +85,7 @@ export default function App() {
           <Onboarding />
         </Suspense>
       );
-    if (hash.startsWith("#tools"))
-      return (
-        <Suspense
-          fallback={
-            <div style={{ padding: 24 }} className="muted">
-              Loading Tools…
-            </div>
-          }
-        >
-          <ToolsWeUse />
-        </Suspense>
-      );
+    }
 
     return (
       <div style={{ padding: 24 }}>
@@ -107,6 +109,7 @@ export default function App() {
               className="logo"
               alt="Springs Climbing Center red logo"
             />
+
             <div className="wordmark">
               <div className="title">Springs Climbing Center</div>
               <div className="subtitle">Operations SOP Hub</div>
@@ -117,22 +120,21 @@ export default function App() {
           <a href="#drawer/overview" className="btn">
             Drawer Counter
           </a>
+
           <a href="#finals/overview" className="btn">
             Finals Projector
           </a>
+
           <a href="#timer/overview" className="btn">
             Finals Timer
           </a>
+
           <a href="#raffle/overview" className="btn">
-            {" "}
-            {/* NEW */}
             Raffle Generator
           </a>
+
           <a href="#onboarding/overview" className="btn">
             Onboarding
-          </a>
-          <a href="#tools/overview" className="btn">
-            Tools We Use
           </a>
         </div>
       </header>
@@ -146,22 +148,30 @@ export default function App() {
         <div className="foot-inner">
           <div className="who">
             <div className="name">{CONTACT.name}</div>
+
             <div className="links">
               <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">
                 LinkedIn
               </a>
+
               <span>•</span>
+
               <a href={CONTACT.github} target="_blank" rel="noreferrer">
                 GitHub
               </a>
+
               <span>•</span>
+
               <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+
               <span>•</span>
+
               <a href={`tel:${CONTACT.phone.replace(/[^0-9]/g, "")}`}>
                 {CONTACT.phone}
               </a>
             </div>
           </div>
+
           <div className="brand-mini">SCC • SOP Hub</div>
         </div>
       </footer>
