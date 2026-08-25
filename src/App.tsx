@@ -105,7 +105,7 @@ export default function App() {
         <div className="top-inner">
           <div className="brand">
             <img
-              src="/SCC_OldLogo.jpg"
+              src={`${process.env.PUBLIC_URL}/SCC_OldLogo.jpg`}
               className="logo"
               alt="Springs Climbing Center red logo"
             />
