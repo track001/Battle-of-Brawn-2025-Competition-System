@@ -9,7 +9,7 @@
 **Developer:** Tiana Schwarz
 ## Live System
 
-**[Open the SCC Operations & Competition System](https://2rfr8h.csb.app/)**
+**[Open the SCC Operations & Competition System](https://track001.github.io/Battle-of-Brawn-2025-Competition-System/)**
 
 ## Citizen Competition Scoring & Ranking
 
