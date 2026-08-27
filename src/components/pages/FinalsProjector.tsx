@@ -1112,7 +1112,7 @@ export default function FinalsProjector() {
       {/* Developer source panel */}
       <DeveloperPanel
         title="Developer Script (Full Source, Finals Projector)"
-        path="/FinalsProjector.ps1"
+        path={`${process.env.PUBLIC_URL}/FinalsProjector.ps1`}
         filename="FinalsProjector.ps1"
       />
 
