@@ -2,27 +2,41 @@ import React, { useEffect, useState, Suspense, lazy } from "react";
 import "./styles/theme.css";
 import { CONTACT } from "./config/constants";
 
-// Eager pages
+// ============================================================================
+// EAGER PAGES
+// ============================================================================
 import DrawerCounter from "./components/pages/DrawerCounter";
 import FinalsProjector from "./components/pages/FinalsProjector";
 import FinalsTimer from "./components/pages/FinalsTimer";
 import RaffleGenerator from "./components/pages/RaffleGenerator";
+import RGPMySQL from "./components/pages/RGPMySQL";
 
-// Lazy pages
+// ============================================================================
+// LAZY PAGES
+// ============================================================================
 const Onboarding = lazy(() => import("./components/pages/Onboarding"));
 
 /**
  * ============================================================================
  * SCC Operations SOP Hub — App.tsx
  * ----------------------------------------------------------------------------
- * RESPONSIBILITY:
- *   - Global header + footer
- *   - Hash-based routing to page components
+ * Handles:
+ *   - Main SCC header
+ *   - Navigation buttons
+ *   - Hash-based page routing
+ *   - Footer
+ *
+ * Pages currently available:
+ *   - Drawer Counter
+ *   - Finals Projector
+ *   - Finals Timer
+ *   - Raffle Generator
+ *   - RGP / MySQL
+ *   - Onboarding
  *
  * IMPORTANT:
- *   Do NOT wrap pages in a `.shell` or `.doc` here. Pages that need the
- *   two-column layout (e.g., Onboarding) render it themselves via SectionShell.
- *   Other pages render their own structure.
+ * Individual pages control their own layouts.
+ * Do not add a .shell or .doc wrapper around Page here.
  * ============================================================================
  */
 
@@ -31,31 +45,42 @@ export default function App() {
     window.location.hash || "#drawer/overview"
   );
 
-  // Keep hash state in sync with URL
+  // ==========================================================================
+  // KEEP ROUTE STATE IN SYNC WITH THE URL
+  // ==========================================================================
   useEffect(() => {
-    const onHash = () => setHash(window.location.hash || "#drawer/overview");
+    const onHash = () => {
+      setHash(window.location.hash || "#drawer/overview");
+    };
 
     window.addEventListener("hashchange", onHash);
 
-    return () => window.removeEventListener("hashchange", onHash);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+    };
   }, []);
 
-  // Redirect bare routes to /overview
+  // ==========================================================================
+  // REDIRECT BARE PAGE ROUTES TO THEIR OVERVIEW SECTION
+  // ==========================================================================
   useEffect(() => {
-    const bare = new Set([
+    const bareRoutes = new Set([
       "#drawer",
       "#finals",
       "#timer",
       "#raffle",
+      "#mysql",
       "#onboarding",
     ]);
 
-    if (bare.has(hash)) {
+    if (bareRoutes.has(hash)) {
       window.location.hash = `${hash}/overview`;
     }
   }, [hash]);
 
-  // Minimal router
+  // ==========================================================================
+  // PAGE ROUTER
+  // ==========================================================================
   const Page = (() => {
     if (hash.startsWith("#drawer")) {
       return <DrawerCounter />;
@@ -73,11 +98,20 @@ export default function App() {
       return <RaffleGenerator />;
     }
 
+    if (hash.startsWith("#mysql")) {
+      return <RGPMySQL />;
+    }
+
     if (hash.startsWith("#onboarding")) {
       return (
         <Suspense
           fallback={
-            <div style={{ padding: 24 }} className="muted">
+            <div
+              className="muted"
+              style={{
+                padding: 24,
+              }}
+            >
               Loading Onboarding…
             </div>
           }
@@ -87,9 +121,15 @@ export default function App() {
       );
     }
 
+    // Unknown route
     return (
-      <div style={{ padding: 24 }}>
+      <div
+        style={{
+          padding: 24,
+        }}
+      >
         <h1>Page Not Found</h1>
+
         <p className="muted">
           The section <code>{hash || "(none)"}</code> is not available. Use the
           header buttons to open an existing SOP.
@@ -98,11 +138,17 @@ export default function App() {
     );
   })();
 
+  // ==========================================================================
+  // APPLICATION
+  // ==========================================================================
   return (
     <div className="scc-root">
-      {/* =================== HEADER =================== */}
+      {/* ====================================================================
+          HEADER
+          ==================================================================== */}
       <header className="top">
         <div className="top-inner">
+          {/* SCC BRAND */}
           <div className="brand">
             <img
               src={`${process.env.PUBLIC_URL}/SCC_OldLogo.jpg`}
@@ -116,7 +162,10 @@ export default function App() {
             </div>
           </div>
 
-          {/* Deep-link each page to its Overview */}
+          {/* ================================================================
+              MAIN NAVIGATION
+              ================================================================ */}
+
           <a href="#drawer/overview" className="btn">
             Drawer Counter
           </a>
@@ -133,46 +182,67 @@ export default function App() {
             Raffle Generator
           </a>
 
+          <a href="#mysql/overview" className="btn">
+            RGP / MySQL
+          </a>
+
           <a href="#onboarding/overview" className="btn">
             Onboarding
           </a>
         </div>
       </header>
 
-      {/* =================== MAIN =================== */}
-      {/* No .shell/.doc wrapper here — pages render their own layout */}
+      {/* ====================================================================
+          MAIN PAGE CONTENT
+          ==================================================================== */}
       <main>{Page}</main>
 
-      {/* =================== FOOTER =================== */}
+      {/* ====================================================================
+          FOOTER
+          ==================================================================== */}
       <footer className="foot">
         <div className="foot-inner">
           <div className="who">
             <div className="name">{CONTACT.name}</div>
 
             <div className="links">
-              <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">
+              <a
+                href={CONTACT.linkedin}
+                target="_blank"
+                rel="noreferrer"
+              >
                 LinkedIn
               </a>
 
               <span>•</span>
 
-              <a href={CONTACT.github} target="_blank" rel="noreferrer">
+              <a
+                href={CONTACT.github}
+                target="_blank"
+                rel="noreferrer"
+              >
                 GitHub
               </a>
 
               <span>•</span>
 
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+              <a href={`mailto:${CONTACT.email}`}>
+                {CONTACT.email}
+              </a>
 
               <span>•</span>
 
-              <a href={`tel:${CONTACT.phone.replace(/[^0-9]/g, "")}`}>
+              <a
+                href={`tel:${CONTACT.phone.replace(/[^0-9]/g, "")}`}
+              >
                 {CONTACT.phone}
               </a>
             </div>
           </div>
 
-          <div className="brand-mini">SCC • SOP Hub</div>
+          <div className="brand-mini">
+            SCC • SOP Hub
+          </div>
         </div>
       </footer>
     </div>
