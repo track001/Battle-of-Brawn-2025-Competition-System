@@ -421,6 +421,57 @@ export default function RGPMySQL() {
         </div>
       </section>
 
+               {/* ================================================================ */}
+        {/* TEMPORARY MANUAL CHECK-IN FALLBACK                               */}
+        {/* ================================================================ */}
+
+        <div
+          className="card"
+          style={{
+            marginTop: "16px",
+          }}
+        >
+          <h3>If all else fails: record scans in Notepad</h3>
+
+          <p>
+            If Computer 2 still cannot connect to Rock Gym Pro, you can
+            temporarily record member scans and check them in from Computer 1.
+          </p>
+
+          <ol>
+            <li>
+              On <strong>Computer 2 (LEFT)</strong>, open{" "}
+              <strong>Notepad</strong>.
+            </li>
+
+            <li>
+              Click inside the blank Notepad document so the cursor is ready for
+              typing.
+            </li>
+
+            <li>
+              Have members <strong>scan their cards normally</strong>. The
+              scanner reads the barcode as the member ID, so each scan will be
+              entered into Notepad.
+            </li>
+
+            <li>
+              Keep Notepad open so you have a running list of the member IDs
+              that scanned in.
+            </li>
+
+            <li>
+              On <strong>Computer 1 (RIGHT / host)</strong>, open Rock Gym Pro
+              Check-In and manually enter each recorded member ID.
+            </li>
+          </ol>
+
+          <p className="muted">
+            This is only a temporary fallback so member check-ins can still be
+            recorded while the Computer 2 connection is unavailable.
+          </p>
+        </div>
+
       {/* ================================================================ */}
       {/* POWERSHELL SCRIPT                                                */}
       {/* ================================================================ */}
