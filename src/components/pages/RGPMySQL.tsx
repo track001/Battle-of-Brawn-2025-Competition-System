@@ -103,6 +103,7 @@ export default function RGPMySQL() {
   const toc = [
     { id: "overview", label: "Overview" },
     { id: "computers", label: "Which Computer?" },
+    { id: "rainmeter", label: "Desktop Status Widget" },
     { id: "run-helper", label: "Run the Helper" },
     { id: "what-it-does", label: "What It Checks" },
     { id: "rgp", label: "RGP Instructions" },
@@ -207,6 +208,99 @@ export default function RGPMySQL() {
               to.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/* RAINMETER DESKTOP STATUS                                         */}
+      {/* ================================================================ */}
+
+      <section id="rainmeter">
+        <h2>Desktop Connection Status (Rainmeter)</h2>
+
+        <p>
+          The <strong>MySQL Connection</strong> widget on the desktop checks
+          whether this computer can reach the database service on Computer 1.
+          It runs a check every 30 seconds, so staff can see a connection
+          problem without opening PowerShell.
+        </p>
+
+        <div className="card">
+          <h3>What the status means</h3>
+          <ul>
+            <li>
+              <strong>CONNECTED:</strong> The database port on Computer 1 is
+              reachable from this computer.
+            </li>
+            <li>
+              <strong>DISCONNECTED:</strong> The database port cannot be reached.
+              Check the network and use the RGP Connection Helper below.
+            </li>
+            <li>
+              <strong>NOT CONFIGURED:</strong> The database computer has not been
+              set in the widget. Enter the SCC host in the widget settings.
+            </li>
+            <li>
+              <strong>CHECK ERROR:</strong> The widget could not complete its
+              check. Refresh it, then use the helper if the error remains.
+            </li>
+          </ul>
+          <p className="muted small">
+            CONNECTED only confirms network access to MySQL on TCP port 3306.
+            It does not confirm that Rock Gym Pro can sign in or use the database.
+            Outside the SCC network, DISCONNECTED may simply mean the server
+            cannot be reached from that location.
+          </p>
+        </div>
+
+        <div className="card" style={{ marginTop: "16px" }}>
+          <h3>Using the widget</h3>
+          <ol>
+            <li>
+              Look for <strong>MYSQL CONNECTION</strong> on the desktop.
+            </li>
+            <li>
+              Check the status. Use the <strong>R</strong> control to refresh
+              the check if needed.
+            </li>
+            <li>
+              If it shows <strong>DISCONNECTED</strong> or
+              <strong> CHECK ERROR</strong>, click the troubleshooting link to
+              open this page and follow the RGP Connection Helper steps.
+            </li>
+            <li>
+              If the widget is missing, open Rainmeter and load the MySQL skin
+              under <code>SCC-Widgets → MySQL</code>.
+            </li>
+          </ol>
+        </div>
+
+        <div className="card" style={{ marginTop: "16px" }}>
+          <h3>Setup / notes</h3>
+          <ul>
+            <li>
+              The widget is configured to check host <code>SCC_PC</code> on
+              TCP port <code>3306</code>. That name must resolve on the SCC
+              network.
+            </li>
+            <li>
+              Rainmeter must be installed and the <code>SCC-Widgets</code>
+              skin folder must be present on the computer.
+            </li>
+            <li>
+              The separate <strong>SOP HUB</strong> widget links to the staff
+              instructions and has a button to open the local Drawer Counter.
+            </li>
+            <li>
+              Both widgets can be loaded, moved, resized, or unloaded
+              separately. Right-click a widget for Rainmeter settings.
+            </li>
+          </ul>
+          <p className="muted small">
+            This is a status indicator, not a repair tool. If RGP cannot
+            connect, start with Computer 1 and run the helper below before
+            changing any database settings.
+          </p>
         </div>
       </section>
 
