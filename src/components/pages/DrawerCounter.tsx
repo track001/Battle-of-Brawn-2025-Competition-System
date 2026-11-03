@@ -3,7 +3,7 @@ import Panel from "../Panel";
 import SectionShell from "../ui/SectionShell";
 
 /**
- * DrawerCounter — End-of-Day Cash Count SOP
+ * DrawerCounter — End-of-Day Cash Count SOP (v2.1)
  * Audience: Front Desk staff at close.
  *
  * Review (TJS)
@@ -11,7 +11,7 @@ import SectionShell from "../ui/SectionShell";
  * - Sticky-note policy is explicit and unconditional: always include in total.
  * - “Pulled cash” is disclosure only; final total logic is unaffected.
  * - Evidence requirement and Slack comms are codified.
- * - Full developer script is visible; String.raw preserves ${...}.
+ * - Full v2.1 developer script is available to copy or download.
  */
 
 export default function DrawerCounter() {
@@ -24,12 +24,13 @@ export default function DrawerCounter() {
 #########################################################
 
 #########################################################
-# Version: 2
-# Date: April 14, 2025
+# Version: 2.1
+# Date: November 3, 2026
 # Updates:
-#   + Added retro theme toggle (black/red <-> teal/pink)
-#   + Calculate, Reset, Screenshot, and Logging fully integrated
-#   + GUI version display
+#   + Default screenshot folder: Desktop/TS/Drawer Screenshots
+#   + Create screenshot folder if missing
+#   + Screenshot save error handling and cleanup
+#   + Existing themes, calculations, and logging retained
 #   > TODO: Fix logo rendering across theme toggles
 #########################################################
 
@@ -65,7 +66,7 @@ $form.Controls.Add($themeToggle)
 
 # === GUI Version Display Label ===
 $versionLabel = New-Object System.Windows.Forms.Label
-$versionLabel.Text = "Version 2: Retro and Classic GUI theme (logos WIP)"
+$versionLabel.Text = "Version 2.1: Retro and Classic GUI theme (logos WIP)"
 $versionLabel.Location = New-Object System.Drawing.Point(20, 35)
 $versionLabel.Size = New-Object System.Drawing.Size(380, 20)
 $versionLabel.ForeColor = $whiteColor
@@ -187,8 +188,6 @@ $calcButton.Add_Click({
         $total += [int]$inputs['dimes'].TextBox.Text * 0.10
         $total += [int]$inputs['nickels'].TextBox.Text * 0.05
         $total += [int]$inputs['pennies'].TextBox.Text * 0.01
-
-        # Sticky note amount is always counted in the final total
         $total += [double]$inputs['sticky'].TextBox.Text
 
         $pulled = [double]$inputs['pulled'].TextBox.Text
@@ -219,19 +218,62 @@ $resetButton.Add_Click({
     $timestamp.Text = "Count restarted: " + (Get-Date).ToString("dddd, MMMM dd, yyyy h:mm tt")
 })
 
+
 # === Screenshot Logic ===
+$screenshotFolder = 'C:\Users\sport\OneDrive\Desktop\TS\Drawer Screenshots'
+
 $screenshotButton.Add_Click({
-    $dialog = New-Object System.Windows.Forms.SaveFileDialog
-    $dialog.Filter = "PNG Image|*.png"
-    $dialog.Title = "Save Screenshot"
-    $dialog.FileName = "DrawerCount_" + (Get-Date -Format "yyyyMMdd_HHmm") + ".png"
-    if ($dialog.ShowDialog() -eq "OK") {
-        $bmp = New-Object Drawing.Bitmap $form.Width, $form.Height
-        $gfx = [Drawing.Graphics]::FromImage($bmp)
-        $gfx.CopyFromScreen($form.Location, [Drawing.Point]::Empty, $form.Size)
-        $bmp.Save($dialog.FileName, [Drawing.Imaging.ImageFormat]::Png)
-        $bmp.Dispose()
-        $gfx.Dispose()
+    $dialog = $null
+    try {
+        # Create folder if it doesn't exist
+        if (-not (Test-Path -LiteralPath $screenshotFolder)) {
+            New-Item -ItemType Directory -Path $screenshotFolder -Force | Out-Null
+        }
+
+        $dialog = New-Object System.Windows.Forms.SaveFileDialog
+        $dialog.Filter = "PNG Image|*.png"
+        $dialog.DefaultExt = "png"
+        $dialog.AddExtension = $true
+        $dialog.Title = "Save Drawer Screenshot"
+        $dialog.InitialDirectory = $screenshotFolder
+        $dialog.RestoreDirectory = $true
+        $dialog.FileName = "DrawerCount_" + (Get-Date -Format "yyyyMMdd_HHmm") + ".png"
+
+        # Open the save dialog in the screenshot folder
+        if ($dialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK) {
+            $bmp = New-Object System.Drawing.Bitmap($form.Width, $form.Height)
+            $gfx = [System.Drawing.Graphics]::FromImage($bmp)
+
+            try {
+                $gfx.CopyFromScreen(
+                    $form.Location,
+                    [System.Drawing.Point]::Empty,
+                    $form.Size
+                )
+
+                $bmp.Save(
+                    $dialog.FileName,
+                    [System.Drawing.Imaging.ImageFormat]::Png
+                )
+            }
+            finally {
+                $gfx.Dispose()
+                $bmp.Dispose()
+            }
+        }
+    }
+    catch {
+        [System.Windows.Forms.MessageBox]::Show(
+            "Could not save screenshot: $($_.Exception.Message)",
+            "Drawer Counter",
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Error
+        ) | Out-Null
+    }
+    finally {
+        if ($null -ne $dialog) {
+            $dialog.Dispose()
+        }
     }
 })
 
@@ -274,6 +316,7 @@ $form.Add_Shown({ $form.Activate() })
       toc={[
         { id: "overview", label: "Overview" },
         { id: "run", label: "Run Options" },
+        { id: "updates", label: "Version 2.1" },
         { id: "screenshots", label: "Save Screenshots" },
         { id: "troubleshoot", label: "Troubleshooting" },
         { id: "dev", label: "Developer Script" },
@@ -292,7 +335,7 @@ $form.Add_Shown({ $form.Activate() })
     >
       {/* ================= STAFF-FACING ================= */}
       <section id="overview">
-        <h1>Drawer Counter (v2) — End of Day</h1>
+        <h1>Drawer Counter (v2.1) — End of Day</h1>
         <div className="accent" />
         <p className="muted">
           This tool exists to make counting the drawer faster. And to save
@@ -328,59 +371,55 @@ $form.Add_Shown({ $form.Activate() })
       <section id="run">
         <h2>Run Options</h2>
 
-        <Panel title="Option A — PowerShell ISE (light blue app)">
+        <Panel title="Option A — Rainmeter (Computer 1)">
           <ol>
-            <li>
-              Open Windows menu → search <b>Windows PowerShell ISE</b> (light
-              blue).
-            </li>
-            <li>
-              Press <b>Ctrl + O</b> and open:
-              <div style={{ marginTop: 6 }}>
-                <code>
-                  "C:\Users\sport\OneDrive\Desktop\TS\Working
-                  Scripts\DrawerCountv2.ps1"
-                </code>
-              </div>
-              <span className="muted small">
-                Update this path if the script moves.
-              </span>
-            </li>
-            <li>
-              Press the green <b>Run</b> button or hit <b>F5</b>.
-            </li>
+            <li>Find the <b>SOP HUB</b> widget on the desktop.</li>
+            <li>Click <b>RUN DRAWER COUNTER</b>.</li>
+            <li>The Drawer Counter opens in PowerShell.</li>
           </ol>
-        </Panel>
-
-        <Panel title='Option B — File Explorer (right-click "Run with PowerShell")'>
-          <ol>
-            <li>
-              Open:
-              <div style={{ marginTop: 6 }}>
-                <code>
-                  "C:\Users\sport\OneDrive\Desktop\TS\Working Scripts\
-                </code>
-              </div>
-            </li>
-            <li>
-              Right-click <code>DrawerCounter_v2.ps1</code> →{" "}
-              <b>Run with PowerShell</b>.
-            </li>
-            <li>
-              If Windows warns, choose <b>More info → Run anyway</b>.
-            </li>
-          </ol>
-        </Panel>
-
-        <Panel title="One-liner (no admin; optional)">
-          <CodeRowLite
-            label="Run"
-            text={`powershell -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\\Desktop\\TS\\scripts\\DrawerCounter_v2.ps1"`}
-          />
           <p className="muted small">
-            Temporary policy bypass; does not permanently change system
-            settings.
+            This button runs the script on the computer you are using. It is
+            configured for SCC Computer 1.
           </p>
+        </Panel>
+
+        <Panel title="Option B — PowerShell ISE">
+          <ol>
+            <li>Open <b>Windows PowerShell ISE</b> from the Start menu.</li>
+            <li>
+              Press <b>Ctrl + O</b> and select:
+              <div style={{ marginTop: 6 }}>
+                <code>{String.raw`C:\Users\sport\OneDrive\Desktop\TS\Working Scripts\DrawerCountv2.ps1`}</code>
+              </div>
+            </li>
+            <li>Press <b>F5</b> or click the green Run button.</li>
+          </ol>
+        </Panel>
+
+        <Panel title="Option C — File Explorer">
+          <ol>
+            <li>
+              Open <code>{String.raw`C:\Users\sport\OneDrive\Desktop\TS\Working Scripts`}</code>.
+            </li>
+            <li>
+              Right-click <code>DrawerCountv2.ps1</code> and select <b>Run with PowerShell</b>.
+            </li>
+          </ol>
+          <p className="muted small">If Windows blocks the script, contact the person who manages the SCC computers.</p>
+        </Panel>
+      </section>
+
+      <section id="updates">
+        <h2>What Changed — v2.1</h2>
+        <Panel title="November 3, 2026">
+          <ul>
+            <li>The Screenshot button now opens the Save As window in the Drawer Screenshots folder by default.</li>
+            <li>The folder is created automatically if it does not exist.</li>
+            <li>Screenshot names include a date and time.</li>
+            <li>Added an error message if a screenshot cannot be saved.</li>
+            <li>Kept the $200 target, sticky-note amount, theme toggle, and count log.</li>
+            <li>Added the SOP Hub Rainmeter shortcut for Computer 1.</li>
+          </ul>
         </Panel>
       </section>
 
@@ -400,13 +439,13 @@ $form.Add_Shown({ $form.Activate() })
               <b>not</b> modify the final total.
             </li>
             <li>
-              Click <b>Screenshot</b> and save to:
+              Click <b>Screenshot</b>. The Save As window opens in this folder by default:
               <div style={{ marginTop: 6 }}>
                 <code>
                   C:\Users\sport\OneDrive\Desktop\TS\Drawer Screenshots
                 </code>
               </div>
-              Use a filename like <code>DrawerCount_YYYYMMDD_TIME.png</code>.
+              A filename like <code>DrawerCount_YYYYMMDD_HHMMSS.png</code> is filled in automatically. You can choose another folder if needed.
             </li>
             <li>
               Post the screenshot in Slack if the drawer is under the target
@@ -425,25 +464,26 @@ $form.Add_Shown({ $form.Activate() })
               Window won’t open: right-click → <b>Run with PowerShell</b>.
             </li>
             <li>
-              SmartScreen: <b>More info → Run anyway</b>.
+              Script blocked by Windows: contact the person who manages the SCC computers.
             </li>
             <li>Validation error: ensure fields contain numbers only.</li>
+            <li>Screenshot not saving: confirm OneDrive is available and check the Drawer Screenshots folder.</li>
           </ul>
         </Panel>
       </section>
 
       {/* ================= DEVELOPER SCRIPT (VISIBLE) ================= */}
       <section id="dev">
-        <h2>Developer Script (Full Source, v2)</h2>
+        <h2>Developer Script (Full Source, v2.1)</h2>
         <p className="muted small" style={{ marginTop: 0 }}>
           Keep the authoritative copy at{" "}
-          <code>Desktop\TS\scripts\DrawerCounter_v2.ps1</code>. Use the buttons
-          to copy or download a reference copy. Do not change production without
-          saving a backup first.
+          <code>{String.raw`C:\Users\sport\OneDrive\Desktop\TS\Working Scripts\DrawerCountv2.ps1`}</code>.
+          Use the buttons to copy or download a reference copy. Back up the file
+          before replacing the version on Computer 1.
         </p>
 
         <ScriptViewerLite
-          filename="DrawerCounter_v2.ps1"
+          filename="DrawerCountv2.ps1"
           value={script}
           onChange={() => {}}
           maxHeight={640}
