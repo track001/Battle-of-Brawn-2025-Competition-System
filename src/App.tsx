@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import "./styles/theme.css";
 import { CONTACT } from "./config/constants";
@@ -10,6 +11,7 @@ import FinalsProjector from "./components/pages/FinalsProjector";
 import FinalsTimer from "./components/pages/FinalsTimer";
 import RaffleGenerator from "./components/pages/RaffleGenerator";
 import RGPMySQL from "./components/pages/RGPMySQL";
+import BrawnResults2026 from "./components/pages/BrawnResults2026";
 
 // ============================================================================
 // LAZY PAGES
@@ -32,6 +34,7 @@ const Onboarding = lazy(() => import("./components/pages/Onboarding"));
  *   - Finals Timer
  *   - Raffle Generator
  *   - RGP / MySQL
+ *   - Brawn 2026 Results
  *   - Onboarding
  *
  * IMPORTANT:
@@ -70,6 +73,7 @@ export default function App() {
       "#timer",
       "#raffle",
       "#mysql",
+      "#brawn2026",
       "#onboarding",
     ]);
 
@@ -100,6 +104,11 @@ export default function App() {
 
     if (hash.startsWith("#mysql")) {
       return <RGPMySQL />;
+    }
+
+    // BRAWN 2026 RESULTS PAGE
+    if (hash.startsWith("#brawn2026")) {
+      return <BrawnResults2026 />;
     }
 
     if (hash.startsWith("#onboarding")) {
@@ -184,6 +193,10 @@ export default function App() {
 
           <a href="#mysql/overview" className="btn">
             RGP / MySQL
+          </a>
+
+          <a href="#brawn2026/overview" className="btn">
+            Brawn 2026 Results
           </a>
 
           <a href="#onboarding/overview" className="btn">
