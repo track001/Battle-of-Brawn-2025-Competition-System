@@ -22,7 +22,7 @@ import "./BrawnResults2026.css";
 // ==========================================================
 
 const OPEN_RESULTS =
-  "https://drive.google.com/file/d/1piE-aPXd6bkGW9C91ltod2pUu0UqA1sE/view?usp=drive_link";
+  "https://drive.google.com/file/d/1c5OVkn8HDBMQNU0FO2oSAYMonOI9xAiF/view?usp=drive_link";
 
 const SHEET_ID =
   "1Tyqx9JMtAiblBcTH1QOsBDpenNAm209lR8beaP-7Puw";
