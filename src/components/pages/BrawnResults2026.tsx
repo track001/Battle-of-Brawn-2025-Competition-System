@@ -1,92 +1,146 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./BrawnResults2026.css";
 
 /**
  * ==========================================================
- * Battle of Brawn 2026 — Results Page
+ * BATTLE OF BRAWN 2026 — RESULTS
+ * Springs Climbing Center
  * ==========================================================
  *
- * Open Qualifiers:
- *   Published PDF (November 6, 2026)
+ * Author: Tiana J. Schwarz
  *
- * Citizens:
- *   Live Jotform → Google Sheets results
- *   02 PODIUM PRINT
- *   03 FULL RESULTS PRINT
+ * Results only. No score calculations or edits.
  *
- * Open Finals:
- *   Pending official results
+ * Open Qualifiers: Published PDF
+ * Citizens: Google Sheets print tabs
+ * Open Finals: Pending
  *
- * This page is display-only.
- * It does not calculate, edit, or approve scores.
  * ==========================================================
  */
+
+// ==========================================================
+// RESULTS LINKS
+// ==========================================================
+
+const OPEN_RESULTS =
+  "https://drive.google.com/file/d/1piE-aPXd6bkGW9C91ltod2pUu0UqA1sE/view?usp=drive_link";
 
 const SHEET_ID =
   "1Tyqx9JMtAiblBcTH1QOsBDpenNAm209lR8beaP-7Puw";
 
-const CITIZENS_TABS = [
-  {
-    label: "Podium Print",
-    gid: "310000102",
-    tab: "02 PODIUM PRINT",
-  },
-  {
-    label: "Full Results Print",
-    gid: "310000103",
-    tab: "03 FULL RESULTS PRINT",
-  },
-];
+const CITIZENS_PODIUM =
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=310000102#gid=310000102`;
 
-const OPEN_PDF =
-  `${process.env.PUBLIC_URL}/results/2026/open-qualifier-results.pdf`;
+const CITIZENS_FULL =
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=310000103#gid=310000103`;
 
-function publishedTab(gid: string): string {
-  return (
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}` +
-    `/pubhtml?gid=${gid}&single=true&widget=false&headers=false`
-  );
-}
-
-function workbookTab(gid: string): string {
-  return (
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}` +
-    `/edit#gid=${gid}`
-  );
-}
+// ==========================================================
+// CONTRIBUTIONS
+// ==========================================================
 
 const contributions = [
-  "Competition planning, operating workflows, staffing coordination, and event communications",
-  "Hold research, manufacturer outreach, orders, freight coordination, sponsor support, and hold deliveries, including Secret Holds, Escape Climbing, and Trango/FRD",
-  "Citizens boulder setting, Open forerunning, climb testing, and setting support",
-  "Registration support, competitor check-in preparation, Rock Gym Pro customer matching, waiver expiration queries, and waiver reminder emails",
-  "Jotform digital scorecard design, competition instructions, score submission workflows, and Google Sheets integration",
-  "Citizens scoring formulas, attempts and flash bonuses, category bump-up logic, duplicate detection, podium standings, and full results printing",
-  "Open Qualifier scoring preparation, results coordination, finalist identification, and finalist notifications",
-  "Finalist emails, Climbing Noise athlete profile coordination, commentator communications, and competition correspondence",
-  "Livestream setup coordination, videographer selection, volunteer communication, and production support",
-  "Climbing Noise Finals timer setup, event code configuration, and competition display integration",
-  "Finals projector, scoreboard displays, athlete name formatting, screen mirroring, and audiovisual troubleshooting",
-  "Technical documentation, testing, score publishing preparation, event troubleshooting, and staff support",
+  {
+    category: "HOLDS & SPONSORSHIPS",
+    items: [
+      "Manufacturer outreach, hold research, and coordination with Secret Holds, Escape Climbing, Trango/FRD, and additional brands",
+      "Orders, invoices, freight, delivery timelines, sponsorship support, and prize coordination",
+      "Hold inventory and preparation for competition setting",
+    ],
+  },
+  {
+    category: "SETTING & FORERUNNING",
+    items: [
+      "Citizens competition boulder setting",
+      "Open Qualifier forerunning, climb testing, and setting support",
+      "Competition preparation and setting coordination",
+    ],
+  },
+  {
+    category: "REGISTRATION & OPERATIONS",
+    items: [
+      "Competitor registration and check-in preparation",
+      "Rock Gym Pro customer queries, registration comparisons, and waiver checks",
+      "Expired waiver identification, reminder emails, and follow-up workflows",
+      "Staff instructions, competition communications, and event troubleshooting",
+    ],
+  },
+  {
+    category: "SCORING & DEVELOPMENT",
+    items: [
+      "Digital Jotform scorecard design and submission workflow",
+      "Google Sheets integration, scoring formulas, and competition data organization",
+      "Flash and attempt scoring, category bump-up rules, and duplicate checks",
+      "Podium standings, printable results, and score publishing workflows",
+      "Competition system testing and technical troubleshooting",
+    ],
+  },
+  {
+    category: "OPEN FINALS & PRODUCTION",
+    items: [
+      "Open Qualifier results preparation and finalist identification",
+      "Finalist notification emails and Climbing Noise athlete profile coordination",
+      "Commentator communication, videographer selection, and volunteer coordination",
+      "Climbing Noise timer configuration and Finals display preparation",
+      "Finals projector, scoreboard, athlete name formatting, and screen mirroring",
+      "Livestream coordination, audiovisual setup, and projector troubleshooting",
+    ],
+  },
 ];
 
+const resultRows = [
+  {
+    number: "01",
+    label: "OPEN QUALIFIERS",
+    meta: "FRIDAY, NOVEMBER 6",
+    description:
+      "Women's and men's qualifier standings, including finalist placements.",
+    status: "PUBLISHED",
+    statusClass: "published",
+    links: [
+      { label: "VIEW OFFICIAL RESULTS", url: OPEN_RESULTS },
+    ],
+  },
+  {
+    number: "02",
+    label: "CITIZENS",
+    meta: "SATURDAY, NOVEMBER 7",
+    description:
+      "Podium standings and full results from the Jotform-connected competition workbook. Results are provisional until finalized.",
+    status: "LIVE / PROVISIONAL",
+    statusClass: "live",
+    links: [
+      { label: "PODIUM RESULTS", url: CITIZENS_PODIUM },
+      { label: "FULL RESULTS", url: CITIZENS_FULL },
+    ],
+  },
+  {
+    number: "03",
+    label: "OPEN FINALS",
+    meta: "SATURDAY, NOVEMBER 7",
+    description:
+      "Official Finals standings will be available following the competition.",
+    status: "PENDING",
+    statusClass: "pending",
+    links: [],
+  },
+];
+
+// ==========================================================
+// COMPONENT
+// ==========================================================
+
 export default function BrawnResults2026() {
-  const [citizensTab, setCitizensTab] = useState(0);
-
-  const tab = CITIZENS_TABS[citizensTab];
-
   useEffect(() => {
     const scrollToSection = () => {
       const route = window.location.hash.split("/")[1];
+      const element = document.getElementById(`brawn26-${route}`);
 
-      if (["open", "citizens", "finals"].includes(route)) {
-        document
-          .getElementById(`brawn26-${route}`)
-          ?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
     };
 
@@ -101,206 +155,180 @@ export default function BrawnResults2026() {
 
   return (
     <div className="brawn26">
-      {/* ==========================================================
-          EVENT HEADER
-          ========================================================== */}
 
-      <header className="brawn26-hero">
-        <p className="brawn26-eyebrow">
-          Springs Climbing Center | November 6–7, 2026
-        </p>
+      {/* ======================================================
+          TITLE
+          ====================================================== */}
 
-        <h1>Battle of Brawn 2026</h1>
-
-        <p className="brawn26-sub">
-          Competition Results | Citizens, Open Qualifiers &amp; Finals
-        </p>
-
-        <div className="brawn26-stategrid">
-          <a href="#brawn2026/open" className="brawn26-status">
-            <b>Open Qualifiers</b>
-            <span className="brawn26-pill brawn26-published">
-              Published
-            </span>
-          </a>
-
-          <a href="#brawn2026/citizens" className="brawn26-status">
-            <b>Citizens</b>
-            <span className="brawn26-pill brawn26-live">
-              Live / Provisional
-            </span>
-          </a>
-
-          <a href="#brawn2026/finals" className="brawn26-status">
-            <b>Open Finals</b>
-            <span className="brawn26-pill brawn26-pending">
-              Pending
-            </span>
-          </a>
+      <header className="brawn26-header">
+        <div className="brawn26-topline">
+          <span>SPRINGS CLIMBING CENTER</span>
+          <span>06—07 NOV 2026</span>
         </div>
+
+        <div className="brawn26-titleblock">
+          <div className="brawn26-edition">
+            COMPETITION ARCHIVE / 2026
+          </div>
+
+          <h1>
+            BATTLE
+            <span> OF </span>
+            BRAWN
+          </h1>
+
+          <div className="brawn26-year">
+            2026
+          </div>
+
+          <p>
+            Official Competition Results
+          </p>
+        </div>
+
+        <nav className="brawn26-localnav">
+          <a href="#brawn2026/open">OPEN QUALIFIERS</a>
+          <a href="#brawn2026/citizens">CITIZENS</a>
+          <a href="#brawn2026/finals">OPEN FINALS</a>
+          <a href="#brawn2026/credits">PRODUCTION NOTES</a>
+        </nav>
       </header>
 
-      {/* ==========================================================
-          OPEN QUALIFIER RESULTS
-          ========================================================== */}
+      {/* ======================================================
+          RESULTS
+          ====================================================== */}
 
-      <section id="brawn26-open" className="brawn26-section">
-        <div className="brawn26-sectionheading">
-          <div>
-            <h2>Open Qualifiers</h2>
-            <p>
-              Friday, November 6 | Women's and Men's Results
-            </p>
-          </div>
-
-          <span className="brawn26-pill brawn26-published">
-            Published
+      <main className="brawn26-results">
+        <div className="brawn26-heading">
+          <span className="brawn26-sectionnumber">
+            01 / RESULTS
           </span>
+          <h2>COMPETITION STANDINGS</h2>
         </div>
 
-        <p className="brawn26-copy">
-          Official Open Qualifier standings, including the women's
-          and men's results, are available below.
+        <p className="brawn26-intro">
+          Battle of Brawn 2026 at Springs Climbing Center.
+          Select a competition division below to access its
+          official results.
         </p>
 
-        <div className="brawn26-actions">
-          <a href={OPEN_PDF} target="_blank" rel="noreferrer">
-            View Results PDF
-          </a>
+        {resultRows.map((result, index) => {
+          const sectionIds = ["open", "citizens", "finals"];
 
-          <a
-            href={OPEN_PDF}
-            download="Battle-of-Brawn-2026-Open-Qualifier-Results.pdf"
-          >
-            Download Results
-          </a>
-        </div>
-
-        <iframe
-          className="brawn26-pdf"
-          title="Battle of Brawn Open Qualifier Results"
-          src={OPEN_PDF}
-        />
-      </section>
-
-      {/* ==========================================================
-          CITIZENS RESULTS
-          ========================================================== */}
-
-      <section id="brawn26-citizens" className="brawn26-section">
-        <div className="brawn26-sectionheading">
-          <div>
-            <h2>Citizens Results</h2>
-            <p>
-              Saturday, November 7 | Jotform → Google Sheets
-            </p>
-          </div>
-
-          <span className="brawn26-pill brawn26-live">
-            Live / Provisional
-          </span>
-        </div>
-
-        <p className="brawn26-copy">
-          Citizens standings are displayed directly from the existing
-          Jotform-connected Google Sheets competition workbook.
-          Results are provisional until finalized and published.
-        </p>
-
-        <div className="brawn26-tabs" role="tablist">
-          {CITIZENS_TABS.map((item, index) => (
-            <button
-              key={item.gid}
-              type="button"
-              role="tab"
-              aria-selected={citizensTab === index}
-              className={citizensTab === index ? "active" : ""}
-              onClick={() => setCitizensTab(index)}
+          return (
+            <section
+              className="brawn26-result"
+              id={`brawn26-${sectionIds[index]}`}
+              key={result.number}
             >
-              {item.label}
-            </button>
-          ))}
-        </div>
+              <div className="brawn26-resultnumber">
+                {result.number}
+              </div>
 
-        <div className="brawn26-actions">
-          <a
-            href={workbookTab(tab.gid)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open {tab.label} in Google Sheets
-          </a>
+              <div className="brawn26-resultcontent">
+                <div className="brawn26-resulttop">
+                  <div>
+                    <p className="brawn26-meta">
+                      {result.meta}
+                    </p>
 
-          <a
-            href={publishedTab(tab.gid)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open Published View
-          </a>
-        </div>
+                    <h3>{result.label}</h3>
+                  </div>
 
-        <div className="brawn26-embedwrap">
-          <iframe
-            key={tab.gid}
-            className="brawn26-sheet"
-            title={`Citizens ${tab.tab}`}
-            src={publishedTab(tab.gid)}
-            loading="lazy"
-          />
-        </div>
+                  <span
+                    className={`brawn26-resultstatus ${result.statusClass}`}
+                  >
+                    {result.status}
+                  </span>
+                </div>
 
-        <p className="brawn26-note">
-          Google Sheets controls the refresh frequency of published
-          results. This display does not modify the existing scoring
-          formulas, validation rules, or competition data.
-        </p>
-      </section>
+                <p className="brawn26-description">
+                  {result.description}
+                </p>
 
-      {/* ==========================================================
-          OPEN FINALS
-          ========================================================== */}
+                {result.links.length > 0 ? (
+                  <div className="brawn26-links">
+                    {result.links.map((link) => (
+                      <a
+                        href={link.url}
+                        key={link.label}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.label}
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="brawn26-awaiting">
+                    RESULTS TO FOLLOW
+                  </p>
+                )}
+              </div>
+            </section>
+          );
+        })}
+      </main>
 
-      <section id="brawn26-finals" className="brawn26-section">
-        <div className="brawn26-sectionheading">
-          <div>
-            <h2>Open Finals</h2>
-            <p>Saturday, November 7, 2026</p>
-          </div>
+      {/* ======================================================
+          CONTRIBUTION LOG
+          ====================================================== */}
 
-          <span className="brawn26-pill brawn26-pending">
-            Pending
+      <section
+        id="brawn26-credits"
+        className="brawn26-credits"
+      >
+        <div className="brawn26-heading">
+          <span className="brawn26-sectionnumber">
+            02 / BEHIND THE WALL
           </span>
+
+          <h2>THE WORK BEHIND BRAWN</h2>
         </div>
 
-        <p className="brawn26-copy">
-          Official Open Finals standings will be published after
-          the competition has concluded.
+        <p className="brawn26-creditsintro">
+          A record of the planning, setting, technical development,
+          and event operations contributed by Tiana J. Schwarz.
+          Much of the work behind a competition happens long before
+          the first climber pulls onto the wall.
+        </p>
+
+        <div className="brawn26-creditlist">
+          {contributions.map((group, index) => (
+            <div
+              className="brawn26-creditgroup"
+              key={group.category}
+            >
+              <div className="brawn26-creditlabel">
+                <span>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <h3>{group.category}</h3>
+              </div>
+
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="brawn26-creditfoot">
+          SELECTED CONTRIBUTIONS / NOT A VERIFIED TIMESHEET
         </p>
       </section>
 
-      {/* ==========================================================
-          CONTRIBUTIONS
-          ========================================================== */}
+      {/* ======================================================
+          PAGE FOOTER
+          ====================================================== */}
 
-      <footer className="brawn26-section brawn26-contrib">
-        <h2>Behind the Competition</h2>
-
-        <p className="brawn26-copy">
-          Planning, technical development, setting, and competition
-          operations contributed by Ti Schwarz for
-          Battle of Brawn 2026.
-        </p>
-
-        <ul>
-          {contributions.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-
-        <p className="brawn26-note">
-          Summary of contributions, not a verified timesheet.
-        </p>
+      <footer className="brawn26-footer">
+        <span>SPRINGS CLIMBING CENTER</span>
+        <span>BATTLE OF BRAWN / 2026</span>
       </footer>
     </div>
   );
