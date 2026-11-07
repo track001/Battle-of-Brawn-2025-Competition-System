@@ -3,13 +3,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 /**
  * Battle of Brawn — Finals Projector (React/TSX)
  * Feature parity to PS/WPF build:
- * - ManualFinalists + PerRowIds
+ * - ManualFinalists + sPerRowIds
  * - Edit + Pips + PixelWidth
  * - AutoPause-on-edit (resume after 600ms idle)
  * - OverlayBlackout (Top-Right Exit only + B / ESC / Click)
  * - Credits "by Ti"
  * - Stealth (no extra chrome), Tilt, Footer (stable with clock)
- * - SOP + Developer Panel (wrap/copy/download .ps1 from /public)
+ * - SOP + Developer Panel (original and Compact v2.2 PowerShell builds)
  */
 
 /* =========================
@@ -336,15 +336,28 @@ const DeveloperPanel: React.FC<{
 }) => {
   const [text, setText] = useState<string>("");
   const [wrap, setWrap] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(path)
-      .then((r) => r.text())
+    const controller = new AbortController();
+    setText("");
+    setLoadError(null);
+    fetch(path, { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.text();
+      })
       .then(setText)
-      .catch(() => setText("# Unable to load script from " + path));
-  }, [path]);
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setLoadError(`Unable to load ${filename}: ${err.message}`);
+        }
+      });
+    return () => controller.abort();
+  }, [path, filename]);
 
   const copyAll = async () => {
+    if (!text || loadError) return;
     try {
       await navigator.clipboard.writeText(text);
       alert("Copied full script to clipboard.");
@@ -354,12 +367,13 @@ const DeveloperPanel: React.FC<{
   };
 
   const download = () => {
+    if (!text || loadError) return;
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = filename;
     a.click();
-    URL.revokeObjectURL(a.href);
+    window.setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 
   return (
@@ -383,10 +397,10 @@ const DeveloperPanel: React.FC<{
           <button style={btnStyle} onClick={() => setWrap((w) => !w)}>
             {wrap ? "Disable wrap" : "Enable wrap"}
           </button>
-          <button style={btnStyle} onClick={copyAll}>
+          <button style={btnStyle} onClick={copyAll} disabled={!text || !!loadError}>
             Copy all
           </button>
-          <button style={btnStyle} onClick={download}>
+          <button style={btnStyle} onClick={download} disabled={!text || !!loadError}>
             Download .ps1
           </button>
         </div>
@@ -403,7 +417,7 @@ const DeveloperPanel: React.FC<{
             lineHeight: 1.4,
           }}
         >
-          {text}
+          {loadError || text || "Loading script..."}
         </pre>
       </div>
     </section>
@@ -445,6 +459,7 @@ export default function FinalsProjector() {
   const [manualPaused, setManualPaused] = useState<boolean>(false);
   const [editingPaused, setEditingPaused] = useState<boolean>(false);
   const [blackout, setBlackout] = useState<boolean>(false);
+  const [scriptVersion, setScriptVersion] = useState<"original" | "compact">("compact");
 
   const [climberWidthPx, setClimberWidthPx] = useState<number>(160);
   const [titleOffsetY, setTitleOffsetY] = useState<number>(20);
@@ -1102,18 +1117,53 @@ export default function FinalsProjector() {
         <h3 style={{ marginTop: 8, fontSize: 18 }}>
           Developer: Download / View PowerShell build
         </h3>
-        <p style={{ marginTop: 6 }}>
-          <a href={`${process.env.PUBLIC_URL}/FinalsProjector.ps1`} download>
-            Download <code>FinalsProjector.ps1</code>
-          </a>
+        <p style={{ marginTop: 6, opacity: 0.8 }}>
+          Both Windows PowerShell versions are kept in source control. Select
+          one below to inspect, copy, or download its complete source. This
+          does not change the React scoreboard above.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12 }}>
+          <button
+            type="button"
+            style={{
+              ...btnStyle,
+              background: scriptVersion === "compact" ? "#bd202d" : "#222",
+              borderColor: scriptVersion === "compact" ? "#bd202d" : "#444",
+            }}
+            onClick={() => setScriptVersion("compact")}
+          >
+            Finals Compact v2.2
+          </button>
+          <button
+            type="button"
+            style={{
+              ...btnStyle,
+              background: scriptVersion === "original" ? "#bd202d" : "#222",
+              borderColor: scriptVersion === "original" ? "#bd202d" : "#444",
+            }}
+            onClick={() => setScriptVersion("original")}
+          >
+            Original / Backup
+          </button>
+        </div>
+        <p style={{ marginTop: 12, opacity: 0.8, fontSize: 13 }}>
+          {scriptVersion === "compact"
+            ? "Compact v2.2: Windows WPF scoreboard for mirrored projectors and cropped livestream feeds; local autosave and first-name display."
+            : "Original: archived PowerShell projector source kept as a backup."}
         </p>
       </section>
 
-      {/* Developer source panel */}
+      {/* Developer source panel — both files remain separate in /public */}
       <DeveloperPanel
-        title="Developer Script (Full Source, Finals Projector)"
-        path={`${process.env.PUBLIC_URL}/FinalsProjector.ps1`}
-        filename="FinalsProjector.ps1"
+        title={scriptVersion === "compact"
+          ? "PowerShell Source — Finals Compact v2.2"
+          : "PowerShell Source — Original / Backup"}
+        path={`${process.env.PUBLIC_URL}/${scriptVersion === "compact"
+          ? "FinalsProjector-Compact-v2.2.ps1"
+          : "FinalsProjector.ps1"}`}
+        filename={scriptVersion === "compact"
+          ? "FinalsProjector-Compact-v2.2.ps1"
+          : "FinalsProjector.ps1"}
       />
 
       {/* FULLSCREEN BLACKOUT OVERLAY (Top-Right Exit only) */}
