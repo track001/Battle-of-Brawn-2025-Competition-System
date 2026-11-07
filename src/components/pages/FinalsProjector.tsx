@@ -1159,10 +1159,10 @@ export default function FinalsProjector() {
           ? "PowerShell Source — Finals Compact v2.2"
           : "PowerShell Source — Original / Backup"}
         path={`${process.env.PUBLIC_URL}/${scriptVersion === "compact"
-          ? "FinalsProjector-Compact-v2.2.ps1"
+          ? "Battle-of-Brawn-Finals-Compact-v2.2.ps1"
           : "FinalsProjector.ps1"}`}
         filename={scriptVersion === "compact"
-          ? "FinalsProjector-Compact-v2.2.ps1"
+          ? "Battle-of-Brawn-Finals-Compact-v2.2.ps1"
           : "FinalsProjector.ps1"}
       />
 
