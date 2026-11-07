@@ -1,0 +1,308 @@
+
+/* ==========================================================
+   BATTLE OF BRAWN 2026 — RESULTS PAGE
+   ========================================================== */
+
+.brawn26 {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 26px 18px 54px;
+  color: #eceef2;
+}
+
+/* ==========================================================
+   EVENT HEADER
+   ========================================================== */
+
+.brawn26-hero {
+  padding: 28px 30px;
+  border: 1px solid #343037;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    #23131d,
+    #11151c 65%
+  );
+}
+
+.brawn26-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d9bac5;
+  font-weight: 700;
+}
+
+.brawn26-hero h1 {
+  font-size: clamp(26px, 4vw, 42px);
+  margin: 6px 0 3px;
+}
+
+.brawn26-sub {
+  color: #aeb4c1;
+}
+
+/* ==========================================================
+   RESULTS STATUS CARDS
+   ========================================================== */
+
+.brawn26-stategrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 24px;
+}
+
+.brawn26-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #0b1018a8;
+  border: 1px solid #41404a;
+  color: #eee;
+  border-radius: 10px;
+  padding: 13px;
+  text-decoration: none !important;
+}
+
+.brawn26-status:hover {
+  background: #29202a;
+  border-color: #a34a58;
+}
+
+.brawn26-status b {
+  font-size: 13px;
+}
+
+.brawn26-pill {
+  display: inline-flex;
+  white-space: nowrap;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.brawn26-published {
+  background: #153e31;
+  color: #aaf0ce;
+}
+
+.brawn26-live {
+  background: #18374b;
+  color: #a4ddff;
+}
+
+.brawn26-pending {
+  background: #403119;
+  color: #f4d9a4;
+}
+
+/* ==========================================================
+   RESULTS SECTIONS
+   ========================================================== */
+
+.brawn26-section {
+  border: 1px solid #2a2f3a;
+  background: #101319;
+  border-radius: 13px;
+  margin-top: 18px;
+  padding: 22px;
+}
+
+.brawn26-sectionheading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.brawn26-sectionheading h2,
+.brawn26-contrib h2 {
+  margin: 0 0 5px;
+  border: 0;
+  padding: 0;
+  font-size: 22px;
+}
+
+.brawn26-sectionheading p {
+  color: #aeb4bf;
+  font-size: 13px;
+}
+
+.brawn26-copy {
+  color: #c2c8d1;
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+/* ==========================================================
+   RESULTS BUTTONS
+   ========================================================== */
+
+.brawn26-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.brawn26-actions a,
+.brawn26-tabs button {
+  display: inline-block;
+  padding: 9px 13px;
+  border-radius: 7px;
+  border: 1px solid #5a424c;
+  background: #28191f;
+  color: #f6e7eb;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.brawn26-actions a:hover,
+.brawn26-tabs button:hover {
+  background: #46252f;
+  text-decoration: none;
+}
+
+/* ==========================================================
+   OPEN QUALIFIER PDF VIEWER
+   ========================================================== */
+
+.brawn26-pdf {
+  display: block;
+  width: 100%;
+  min-height: 640px;
+  border: 1px solid #40444b;
+  border-radius: 8px;
+  background: white;
+}
+
+/* ==========================================================
+   CITIZENS GOOGLE SHEETS VIEWER
+   ========================================================== */
+
+.brawn26-embedwrap {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #414751;
+}
+
+.brawn26-sheet {
+  display: block;
+  width: 100%;
+  height: 690px;
+  border: 0;
+  background: white;
+}
+
+.brawn26-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 17px;
+}
+
+.brawn26-tabs button {
+  cursor: pointer;
+  background: #1c2028;
+  color: #bbb;
+}
+
+.brawn26-tabs button.active {
+  background: #ba2434;
+  color: white;
+  border-color: #e24d59;
+}
+
+/* ==========================================================
+   CONTRIBUTIONS / FOOTER
+   ========================================================== */
+
+.brawn26-note {
+  color: #a8adb7;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.brawn26-contrib {
+  background: #0d1016;
+}
+
+.brawn26-contrib ul {
+  columns: 2;
+  column-gap: 38px;
+  padding-left: 18px;
+  margin-top: 15px;
+}
+
+.brawn26-contrib li {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #c1c7d0;
+  margin: 0 0 9px;
+  break-inside: avoid;
+  padding-right: 8px;
+}
+
+/* ==========================================================
+   NAVIGATION SCROLL OFFSET
+   ========================================================== */
+
+#brawn26-open,
+#brawn26-citizens,
+#brawn26-finals {
+  scroll-margin-top: 110px;
+}
+
+/* ==========================================================
+   MOBILE RESPONSIVENESS
+   ========================================================== */
+
+@media (max-width: 790px) {
+  .brawn26 {
+    padding: 16px 10px 35px;
+  }
+
+  .brawn26-stategrid {
+    grid-template-columns: 1fr;
+  }
+
+  .brawn26-hero {
+    padding: 20px;
+  }
+
+  .brawn26-section {
+    padding: 16px;
+  }
+
+  .brawn26-sectionheading {
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .brawn26-pdf {
+    min-height: 490px;
+  }
+
+  .brawn26-sheet {
+    height: 590px;
+  }
+
+  .brawn26-contrib ul {
+    columns: 1;
+  }
+
+  .brawn26-actions {
+    flex-direction: column;
+  }
+
+  .brawn26-actions a {
+    text-align: center;
+  }
+}
