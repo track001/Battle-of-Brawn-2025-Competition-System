@@ -9,9 +9,13 @@ import "./BrawnResults2026.css";
  * Developed by Ti
  * ==========================================================
  *
+ * Event & Scoring Management: Ti
+ *
+ * Livestream: YouTube / BetaBreakerz
  * Open Qualifiers: Published PDF
  * Citizens: Published PDF + Google Sheets
- * Open Finals: PNG scoreboard + finalist comparison
+ * Open Finals: Published PNG + rankings comparison
+ * Scorecard Archive: Citizens + Open Jotform
  *
  * React: Create React App / react-scripts
  *
@@ -21,7 +25,19 @@ import "./BrawnResults2026.css";
  */
 
 // ==========================================================
-// RESULTS LINKS
+// LIVESTREAM
+// ==========================================================
+
+const LIVESTREAM_ID = "di7EF7pGIgk";
+
+const LIVESTREAM_URL =
+  `https://www.youtube.com/live/${LIVESTREAM_ID}`;
+
+const LIVESTREAM_EMBED =
+  `https://www.youtube-nocookie.com/embed/${LIVESTREAM_ID}`;
+
+// ==========================================================
+// PUBLISHED RESULTS
 // ==========================================================
 
 const CITIZENS_FILE_ID =
@@ -40,7 +56,7 @@ const CITIZENS_PDF = driveView(CITIZENS_FILE_ID);
 const OPEN_PDF = driveView(OPEN_FILE_ID);
 
 // ==========================================================
-// FINALS IMAGE — GITHUB PUBLIC FOLDER
+// FINALS PNG — public/results/ IN GITHUB
 // ==========================================================
 
 const FINALS_IMAGE_URL =
@@ -58,6 +74,16 @@ const CITIZENS_PODIUM =
 
 const CITIZENS_FULL =
   `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=310000103#gid=310000103`;
+
+// ==========================================================
+// ORIGINAL JOTFORM SCORECARDS
+// ==========================================================
+
+const CITIZENS_JOTFORM_URL =
+  "https://www.jotform.com/form/253036330977055";
+
+const OPEN_JOTFORM_URL =
+  "https://form.jotform.com/263071395648061";
 
 // ==========================================================
 // TYPES
@@ -87,16 +113,17 @@ type Finalist = {
   final: number;
 };
 
-// ==========================================================
-// FINALS COMPARISON
-// ==========================================================
+type Scorecard = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  cutoff: string;
+};
 
-/**
- * Rankings based on the published Open Qualifier results
- * and the supplied Finals scoreboard.
- *
- * Update here only if an official placement is corrected.
- */
+// ==========================================================
+// FINALIST COMPARISONS
+// ==========================================================
 
 const womensFinalists: Finalist[] = [
   { name: "Adriene Clark", qualifier: 1, final: 1 },
@@ -117,7 +144,7 @@ const mensFinalists: Finalist[] = [
 ];
 
 // ==========================================================
-// RESULTS
+// RESULTS DATA
 // ==========================================================
 
 const results: Result[] = [
@@ -162,14 +189,33 @@ const results: Result[] = [
     date: "Saturday, November 7",
     status: "Published",
     description:
-      "Overall women's and men's Finals results, with each finalist's qualifying placement shown alongside their final standing.",
+      "Overall women's and men's Finals results, with each finalist's qualifying rank shown alongside their final placement.",
     imageUrl: FINALS_IMAGE_URL,
     links: [],
   },
 ];
 
+const scorecards: Scorecard[] = [
+  {
+    id: "citizens",
+    title: "Citizens Digital Scorecard",
+    description:
+      "Original digital scorecard used for Citizens submissions, including boulder selections, attempts, and competition scoring.",
+    url: CITIZENS_JOTFORM_URL,
+    cutoff: "November 7, 2026 at 6:15 PM",
+  },
+  {
+    id: "open",
+    title: "Open Qualifier Digital Scorecard",
+    description:
+      "Original digital scorecard used to submit Open Qualifier results and determine finalists.",
+    url: OPEN_JOTFORM_URL,
+    cutoff: "November 7, 2026 at 9:30 AM",
+  },
+];
+
 // ==========================================================
-// SHARE HELPERS
+// SHARING HELPERS
 // ==========================================================
 
 async function copyLink(url: string): Promise<boolean> {
@@ -201,7 +247,7 @@ async function shareResult(
     try {
       await navigator.share({
         title: `Battle of Brawn 2026 | ${title}`,
-        text: `View the Battle of Brawn 2026 ${title} results.`,
+        text: `View the Battle of Brawn 2026 ${title}.`,
         url,
       });
 
@@ -219,7 +265,7 @@ async function shareResult(
   if (await copyLink(url)) {
     window.alert("Share link copied to clipboard.");
   } else {
-    window.prompt("Copy this share link:", url);
+    window.prompt("Copy this link:", url);
   }
 }
 
@@ -294,7 +340,127 @@ function ActionButton({
 }
 
 // ==========================================================
-// FINALS RANKING COMPARISON
+// LIVESTREAM
+// ==========================================================
+
+function BrawnLivestream() {
+  return (
+    <section
+      id="brawn26-livestream"
+      style={{
+        width: "100%",
+        maxWidth: "1180px",
+        margin: "0 auto 36px",
+        padding: "24px 16px",
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "clamp(1.5rem, 4vw, 2rem)",
+            marginBottom: "10px",
+          }}
+        >
+          Battle of Brawn 2026 | Livestream
+        </h2>
+
+        <p
+          style={{
+            lineHeight: 1.6,
+            opacity: 0.85,
+            margin: "0 auto",
+            maxWidth: "760px",
+          }}
+        >
+          Watch the Battle of Brawn 2026 competition
+          livestream, produced in collaboration with
+          BetaBreakerz.
+        </p>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: "16 / 9",
+          backgroundColor: "#111",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0 8px 25px rgba(0,0,0,0.2)",
+        }}
+      >
+        <iframe
+          src={LIVESTREAM_EMBED}
+          title="Battle of Brawn 2026 Livestream"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            border: 0,
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "10px",
+          marginTop: "18px",
+        }}
+      >
+        <ActionButton
+          primary
+          label="Watch on YouTube"
+          onClick={() =>
+            window.open(
+              LIVESTREAM_URL,
+              "_blank",
+              "noopener,noreferrer"
+            )
+          }
+        />
+
+        <ActionButton
+          label="Copy Livestream Link"
+          onClick={async () => {
+            if (await copyLink(LIVESTREAM_URL)) {
+              window.alert("Livestream link copied.");
+            } else {
+              window.prompt(
+                "Copy livestream link:",
+                LIVESTREAM_URL
+              );
+            }
+          }}
+        />
+
+        <ActionButton
+          label="Share Livestream"
+          onClick={() =>
+            shareResult("Livestream", LIVESTREAM_URL)
+          }
+        />
+      </div>
+    </section>
+  );
+}
+
+// ==========================================================
+// FINALS COMPARISON COMPONENT
 // ==========================================================
 
 function FinalistComparison({
@@ -339,11 +505,25 @@ function FinalistComparison({
         >
           <thead>
             <tr>
-              <th style={{ padding: "10px" }}>Athlete</th>
-              <th style={{ padding: "10px", textAlign: "center" }}>
+              <th style={{ padding: "10px" }}>
+                Athlete
+              </th>
+
+              <th
+                style={{
+                  padding: "10px",
+                  textAlign: "center",
+                }}
+              >
                 Qualifier
               </th>
-              <th style={{ padding: "10px", textAlign: "center" }}>
+
+              <th
+                style={{
+                  padding: "10px",
+                  textAlign: "center",
+                }}
+              >
                 Finals
               </th>
             </tr>
@@ -365,7 +545,8 @@ function FinalistComparison({
                 <td
                   style={{
                     padding: "10px",
-                    fontWeight: athlete.final <= 3 ? 700 : 400,
+                    fontWeight:
+                      athlete.final <= 3 ? 700 : 400,
                   }}
                 >
                   {athlete.name}
@@ -384,7 +565,8 @@ function FinalistComparison({
                   style={{
                     padding: "10px",
                     textAlign: "center",
-                    fontWeight: athlete.final <= 3 ? 700 : 400,
+                    fontWeight:
+                      athlete.final <= 3 ? 700 : 400,
                   }}
                 >
                   {athlete.final}
@@ -399,73 +581,252 @@ function FinalistComparison({
 }
 
 // ==========================================================
+// ORIGINAL COMPETITION SCORECARDS
+// ==========================================================
+
+function BrawnScorecardArchive() {
+  return (
+    <section
+      id="brawn26-scorecards"
+      style={{
+        maxWidth: "1180px",
+        margin: "40px auto",
+        padding: "24px 16px",
+        boxSizing: "border-box",
+      }}
+    >
+      <h2 style={{ marginBottom: "10px" }}>
+        Competition Scorecard Archive
+      </h2>
+
+      <p
+        style={{
+          lineHeight: 1.7,
+          marginBottom: "12px",
+        }}
+      >
+        The original digital scorecards used for
+        Battle of Brawn 2026 are preserved here
+        as references for the competition's scoring
+        and submission workflows.
+      </p>
+
+      <p
+        style={{
+          fontWeight: 600,
+          marginBottom: "24px",
+        }}
+      >
+        Score submissions are closed. The official
+        competition standings are available in
+        the published results above.
+      </p>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
+          gap: "20px",
+        }}
+      >
+        {scorecards.map((form) => (
+          <article
+            key={form.id}
+            style={{
+              border: "1px solid rgba(128,128,128,0.35)",
+              borderRadius: "8px",
+              padding: "22px",
+              minWidth: 0,
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>
+              {form.title}
+            </h3>
+
+            <p style={{ lineHeight: 1.6 }}>
+              {form.description}
+            </p>
+
+            <p style={{ fontSize: "0.9rem" }}>
+              <strong>Submission cutoff:</strong>{" "}
+              {form.cutoff}
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+                margin: "18px 0",
+              }}
+            >
+              <a
+                href={form.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 16px",
+                  borderRadius: "6px",
+                  background: "#b91c1c",
+                  color: "#fff",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                View Original Form
+              </a>
+
+              <ActionButton
+                label="Copy Form Link"
+                onClick={async () => {
+                  if (await copyLink(form.url)) {
+                    window.alert("Form link copied.");
+                  } else {
+                    window.prompt(
+                      "Copy form link:",
+                      form.url
+                    );
+                  }
+                }}
+              />
+            </div>
+
+            <details style={{ marginTop: "16px" }}>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  padding: "10px 0",
+                }}
+              >
+                Show Embedded Form
+              </summary>
+
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  opacity: 0.75,
+                  lineHeight: 1.5,
+                }}
+              >
+                Disabled Jotforms display their closure
+                message rather than the original fields.
+                To preserve the full layout, save a
+                separate PDF or screenshot archive.
+              </p>
+
+              <div
+                style={{
+                  marginTop: "12px",
+                  borderRadius: "6px",
+                  overflow: "hidden",
+                  background: "#fff",
+                }}
+              >
+                <iframe
+                  title={form.title}
+                  src={form.url}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "480px",
+                    border: 0,
+                    display: "block",
+                  }}
+                />
+              </div>
+            </details>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ==========================================================
 // PLANNING & PRODUCTION
 // ==========================================================
 
 const contributions = [
   {
-    title: "Competition Planning & Coordination",
+    title: "Event Management & Scoring Operations",
     items: [
-      "Competition planning, scheduling, preparation, staff communication, and event logistics",
-      "Coordinating meetings, deliveries, preparation, and deadlines between competition staff, vendors, sponsors, and outside partners",
-      "Registration and check-in planning, competitor communications, and event-day troubleshooting",
-      "Coordinating event logistics and technical operations for a competition with more than 250 competitors",
-      "Supporting time-sensitive operational decisions, resolving unexpected issues, and maintaining competition timelines under pressure",
+      "Served as Event and Scoring Manager for Battle of Brawn 2026, overseeing competition operations, scoring systems, technical infrastructure, and coordination across all rounds",
+      "Managed scoring operations for Youth, Citizens, Open Qualifiers, and Open Finals, supporting more than 250 competitors",
+      "Coordinated event planning, scheduling, staff communications, sponsor relationships, registration logistics, and competition-day operations",
+      "Led planning meetings and operational coordination with competition staff, vendors, and the BetaBreakerz livestream production team",
+      "Managed time-sensitive scoring, event operations, and livestream coordination simultaneously under high-pressure competition conditions",
+      "Developed and managed event programming, scoring software, technical tools, and competition workflows",
+      "Identified operational pain points from Battle of Brawn 2025 and implemented process improvements for the 2026 event",
+      "Processed, validated, and published competition scores within 30 minutes of each wave ending, with results available the same day for more than 250 competitors",
     ],
   },
   {
-    title: "Holds, Sponsors, Raffles & Setting",
+    title: "International Vendor Coordination, Sponsorships & Routesetting",
     items: [
-      "Hold research, manufacturer outreach, and sponsorship coordination with Secret Holds, Escape Climbing, Trango/FRD, and other suppliers",
-      "Negotiating and securing manufacturer discounts, wholesale pricing, sponsorship contributions, and prize support to reduce event costs",
-      "Hold and prize orders, invoices, freight, shipping, delivery scheduling, and tracking",
-      "Raffle planning and coordination, prize sourcing, sponsor outreach, and organization of raffle-related materials and logistics",
-      "Developing and maintaining relationships with climbing hold manufacturers, sponsors, and industry partners",
-      "Routesetting and forerunning throughout competition week, including Citizens boulders and Open competition preparation",
-      "Testing, adjusting, and refining competition problems for difficulty, movement quality, consistency, and athlete readiness",
-      "Supporting the setting team through ongoing forerunning, feedback, and event preparation",
+      "Conducted international business communications, supplier coordination, and transactions with climbing hold manufacturers, including Secret Holds in Poland",
+      "Coordinated international purchasing, invoicing, payment arrangements, shipping, freight, and delivery timelines",
+      "Worked with Secret Holds, Escape Climbing, Trango/FRD, and additional manufacturers to source climbing holds, prizes, and competition resources",
+      "Negotiated and secured manufacturer discounts, wholesale pricing, sponsorship contributions, and prize support to reduce competition costs",
+      "Managed hold and prize orders, vendor relationships, delivery tracking, and competition inventory preparation",
+      "Coordinated raffle planning, sponsor outreach, prize sourcing, and raffle logistics",
+      "Routeset and foreran throughout competition week, contributing to Citizens boulders and Open competition preparation",
+      "Tested, adjusted, and refined competition boulders for difficulty, movement quality, consistency, and athlete experience",
+      "Collaborated with the setting team on problem development, testing, forerunning feedback, and final preparation",
     ],
   },
   {
-    title: "Scoring & Technical Development",
+    title: "Personal Investment & Community Support",
     items: [
-      "Designing and implementing the Citizens digital scoring workflow using Jotform, Google Sheets, and automated validation",
-      "Developing scoring formulas, attempt and flash bonuses, category bump-up rules, duplicate detection, and tie-review procedures",
-      "Creating real-time submission dashboards, staff review tools, podium standings, and full-results reports",
-      "Processing, validating, and publishing competition scores within 30 minutes of each wave ending, with results available the same day for more than 250 competitors",
-      "Developing printable scoring reports, PDF exports, public results pages, and distribution workflows",
-      "Writing custom PowerShell scripts to accommodate projector dimensions, manage the Finals scoring display, and support competition presentation requirements",
-      "Building and maintaining Finals projector tools, scoring displays, and Climbing Noise timer integration",
-      "Troubleshooting scoring, submission, display, and technical issues in high-pressure, time-sensitive competition environments",
-      "Resolving data discrepancies, duplicate submissions, name corrections, and scoring questions while preserving results integrity",
-      "Configuring projectors, screen mirroring, display sizing, and competition technical equipment",
+      "Personally contributed approximately $4,000 toward Battle of Brawn 2026 to support hold diversity, prizes, competitor experience, and the Springs Climbing Center community",
+      "Invested in competition resources to expand access to varied climbing holds, movement styles, and opportunities for athletes",
+      "Supported additional prizes, event resources, and competition improvements to enhance the experience for competitors and the wider climbing community",
+      "Prioritized long-term community value by investing in resources that could continue benefiting SCC beyond the competition",
     ],
   },
   {
-    title: "Open Finals & BetaBreakerz Livestream",
+    title: "Scoring Systems & Software Development",
     items: [
-      "Livestream planning and production coordination with BetaBreakerz",
-      "Meetings, production preparation, and communication between BetaBreakerz and competition staff",
-      "Videographer recruitment, applications, selection, scheduling, and communications",
-      "Finalist identification, notification emails, and Climbing Noise athlete profile coordination",
-      "Commentator communication, livestream displays, projector integration, and audiovisual setup",
-      "Supporting Finals scoring operations and troubleshooting live display or production issues during the event",
+      "Designed, programmed, and managed the event's custom competition software, scoring systems, and technical workflows",
+      "Built the Citizens digital scoring workflow using Jotform, Google Sheets, automated validation, and staff-facing review tools",
+      "Developed scoring formulas, attempt validation, category bump-up logic, duplicate detection, and tie-review procedures",
+      "Created real-time scoring dashboards, submission review tools, podium standings, full-results reports, and printable exports",
+      "Built the public results website and organized downloadable PDFs, Finals images, shareable links, and published competition results",
+      "Wrote custom PowerShell scripts to accommodate projector dimensions, manage Finals displays, and support competition scoring presentations",
+      "Developed and maintained Finals projector software, scoring displays, technical utilities, and Climbing Noise timer integration",
+      "Improved scoring reliability, automation, review procedures, and publishing turnaround based on lessons learned from the previous year's competition",
+      "Resolved submission discrepancies, duplicate entries, athlete name corrections, category adjustments, and scoring concerns while preserving results integrity",
     ],
   },
   {
-    title: "Check-In & Event Operations",
+    title: "Livestream & Finals Production Management",
     items: [
-      "Rock Gym Pro customer database and competition registration comparisons",
-      "Waiver expiration queries, registration verification, and bulk waiver reminder communications",
-      "Developing staff-facing procedures, check-in tools, and troubleshooting documentation",
-      "Supporting competition-day staff with registration discrepancies, technical problems, and scoring questions",
-      "Coordinating rapid issue resolution across multiple competition waves to minimize delays and maintain publishing deadlines",
+      "Managed livestream coordination and technical requirements across the competition in partnership with BetaBreakerz",
+      "Organized and participated in production planning meetings, technical coordination, scheduling discussions, and event preparation with the livestream team",
+      "Coordinated videographer recruitment, applications, selection, scheduling, and communications",
+      "Managed finalist identification, athlete notifications, commentator coordination, and Climbing Noise profile preparation",
+      "Developed custom PowerShell Finals presentation software to accommodate projector dimensions and scoring display requirements",
+      "Coordinated livestream displays, projector integration, audiovisual requirements, and competition scoring presentations",
+      "Troubleshot technical issues during live competition while maintaining communication between scoring staff, event operations, and livestream production",
+    ],
+  },
+  {
+    title: "Registration, Check-In & Event Operations",
+    items: [
+      "Performed Rock Gym Pro customer database and competition registration comparisons",
+      "Developed waiver expiration queries, registration verification processes, and bulk waiver reminder communications",
+      "Created staff-facing procedures, check-in resources, technical tools, and troubleshooting documentation",
+      "Supported staff with registration discrepancies, scoring questions, submission problems, and event-day technical issues",
+      "Coordinated rapid issue resolution across competition waves to minimize delays and maintain scoring publication deadlines",
+      "Balanced technical management, operational troubleshooting, and competition support throughout the event",
     ],
   },
 ];
 
 // ==========================================================
-// COMPONENT
+// MAIN COMPONENT
 // ==========================================================
 
 export default function BrawnResults2026() {
@@ -473,7 +834,10 @@ export default function BrawnResults2026() {
 
   useEffect(() => {
     const scrollToSection = () => {
-      const section = window.location.hash.split("/")[1];
+      const section =
+        window.location.hash.split("/")[1];
+
+      if (!section) return;
 
       const element = document.getElementById(
         `brawn26-${section}`
@@ -489,7 +853,10 @@ export default function BrawnResults2026() {
 
     scrollToSection();
 
-    window.addEventListener("hashchange", scrollToSection);
+    window.addEventListener(
+      "hashchange",
+      scrollToSection
+    );
 
     return () => {
       window.removeEventListener(
@@ -513,11 +880,21 @@ export default function BrawnResults2026() {
   };
 
   const getResultPageUrl = (id: string) => {
-    return `${window.location.origin}${window.location.pathname}#brawn2026/${id}`;
+    return (
+      `${window.location.origin}` +
+      `${window.location.pathname}` +
+      `#brawn2026/${id}`
+    );
   };
 
   return (
     <div className="brawn26">
+
+      {/* ======================================================
+          LIVESTREAM — TOP OF RESULTS PAGE
+      ====================================================== */}
+
+      <BrawnLivestream />
 
       {/* ======================================================
           HEADER
@@ -525,17 +902,27 @@ export default function BrawnResults2026() {
 
       <header className="brawn26-header">
         <div className="brawn26-headerline">
-          <span>SPRINGS CLIMBING CENTER</span>
-          <span>NOVEMBER 6–7, 2026</span>
+          <span>
+            SPRINGS CLIMBING CENTER
+          </span>
+
+          <span>
+            NOVEMBER 6–7, 2026
+          </span>
         </div>
 
         <h1>Battle of Brawn 2026</h1>
+
         <p>Competition Results</p>
 
         <nav
           className="brawn26-nav"
           aria-label="Results navigation"
         >
+          <a href="#brawn2026/livestream">
+            Livestream
+          </a>
+
           <a href="#brawn2026/open">
             Open Qualifiers
           </a>
@@ -546,6 +933,10 @@ export default function BrawnResults2026() {
 
           <a href="#brawn2026/finals">
             Open Finals
+          </a>
+
+          <a href="#brawn2026/scorecards">
+            Scorecards
           </a>
         </nav>
 
@@ -561,7 +952,7 @@ export default function BrawnResults2026() {
             onClick={() =>
               shareResult(
                 "Competition Results",
-                window.location.href
+                `${window.location.origin}${window.location.pathname}#brawn2026/`
               )
             }
           />
@@ -604,7 +995,7 @@ export default function BrawnResults2026() {
               </p>
 
               {/* ==========================================
-                  CITIZENS YOUTH CATEGORY DETAILS
+                  CITIZENS YOUTH CATEGORIES
               ========================================== */}
 
               {result.id === "citizens" && (
@@ -615,7 +1006,9 @@ export default function BrawnResults2026() {
                     lineHeight: 1.7,
                   }}
                 >
-                  <strong>Youth categories:</strong>
+                  <strong>
+                    Youth categories:
+                  </strong>
 
                   <ul
                     style={{
@@ -625,13 +1018,14 @@ export default function BrawnResults2026() {
                   >
                     <li>
                       Youth 9 &amp; Under:
-                      combined-gender results and podium.
+                      combined-gender results
+                      and podium.
                     </li>
 
                     <li>
                       Youth 10–14:
-                      separate girls' and boys' results
-                      and podiums.
+                      separate girls' and boys'
+                      results and podiums.
                     </li>
                   </ul>
                 </div>
@@ -720,7 +1114,7 @@ export default function BrawnResults2026() {
               )}
 
               {/* ==========================================
-                  OPEN FINALS RANKING COMPARISON
+                  OPEN FINALS COMPARISON
               ========================================== */}
 
               {result.id === "finals" && (
@@ -741,9 +1135,9 @@ export default function BrawnResults2026() {
                       marginBottom: "16px",
                     }}
                   >
-                    A comparison of each finalist's
-                    qualifying rank and overall Finals
-                    placement.
+                    Each finalist's qualifying
+                    rank compared with their
+                    overall Finals placement.
                   </p>
 
                   <div
@@ -769,7 +1163,7 @@ export default function BrawnResults2026() {
               )}
 
               {/* ==========================================
-                  OPEN FINALS SCOREBOARD IMAGE
+                  FINALS SCOREBOARD IMAGE
               ========================================== */}
 
               {result.imageUrl && (
@@ -865,8 +1259,9 @@ export default function BrawnResults2026() {
                       marginTop: "12px",
                     }}
                   >
-                    Download the Finals scoreboard image
-                    for posting, printing, or sharing.
+                    Download the Finals scoreboard
+                    image for posting, printing,
+                    or sharing.
                   </p>
                 </div>
               )}
@@ -906,8 +1301,7 @@ export default function BrawnResults2026() {
               )}
 
               {/* ==========================================
-                  SHARE SECTION LINK
-                  Open Qualifiers uses only the PDF link.
+                  SECTION SHARING
               ========================================== */}
 
               {result.id !== "open" && (
@@ -940,6 +1334,12 @@ export default function BrawnResults2026() {
       </main>
 
       {/* ======================================================
+          ORIGINAL COMPETITION SCORECARDS
+      ====================================================== */}
+
+      <BrawnScorecardArchive />
+
+      {/* ======================================================
           PLANNING & PRODUCTION
       ====================================================== */}
 
@@ -947,7 +1347,9 @@ export default function BrawnResults2026() {
         <details>
           <summary>
             <div className="brawn26-productiontitle">
-              <h2>Planning &amp; Production</h2>
+              <h2>
+                Planning &amp; Production
+              </h2>
 
               <span>
                 Ti | Battle of Brawn 2026
@@ -961,10 +1363,13 @@ export default function BrawnResults2026() {
 
           <div className="brawn26-productioncontent">
             <p className="brawn26-productionintro">
-              Competition planning, coordination,
-              routesetting, forerunning, sponsorship
-              development, scoring systems, and event
-              operations for more than 250 competitors.
+              Event and scoring management for
+              Battle of Brawn 2026, supporting
+              more than 250 competitors through
+              custom software development,
+              international vendor coordination,
+              livestream production, routesetting,
+              sponsorships, and competition operations.
             </p>
 
             {contributions.map((group) => (
@@ -985,7 +1390,10 @@ export default function BrawnResults2026() {
             ))}
 
             <p className="brawn26-credit">
-              Planning and technical development: Ti
+              Event &amp; Scoring Management,
+              Software Development,
+              Livestream Coordination,
+              and Personal Financial Contribution: Ti
             </p>
           </div>
         </details>
@@ -996,8 +1404,13 @@ export default function BrawnResults2026() {
       ====================================================== */}
 
       <footer className="brawn26-footer">
-        <span>Springs Climbing Center</span>
-        <span>Battle of Brawn 2026</span>
+        <span>
+          Springs Climbing Center
+        </span>
+
+        <span>
+          Battle of Brawn 2026
+        </span>
       </footer>
     </div>
   );
