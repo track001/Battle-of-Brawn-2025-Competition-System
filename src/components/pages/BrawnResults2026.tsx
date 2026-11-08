@@ -13,6 +13,8 @@ import "./BrawnResults2026.css";
  * Citizens: Published PDF + Google Sheets
  * Open Finals: Published PNG scoreboard
  *
+ * React: Create React App / react-scripts
+ *
  * Display and distribution only.
  * No scoring calculations are performed here.
  * ==========================================================
@@ -41,8 +43,18 @@ const OPEN_PDF = driveView(OPEN_FILE_ID);
 // FINALS IMAGE — GITHUB PUBLIC FOLDER
 // ==========================================================
 
+/**
+ * GitHub repository location:
+ *
+ * public/results/
+ * Battle-of-Brawn-2026-Open-Finals-Results.png
+ *
+ * Uses PUBLIC_URL for Create React App compatibility.
+ * This preserves the GitHub Pages repository base path.
+ */
+
 const FINALS_IMAGE_URL =
-  `${import.meta.env.BASE_URL}results/Battle-of-Brawn-2026-Open-Finals-Results.png`;
+  `${process.env.PUBLIC_URL || ""}/results/Battle-of-Brawn-2026-Open-Finals-Results.png`;
 
 // ==========================================================
 // CITIZENS GOOGLE SHEETS
@@ -136,6 +148,7 @@ async function copyLink(url: string): Promise<boolean> {
     return true;
   } catch {
     const input = document.createElement("textarea");
+
     input.value = url;
     input.style.position = "fixed";
     input.style.opacity = "0";
@@ -146,6 +159,7 @@ async function copyLink(url: string): Promise<boolean> {
     const success = document.execCommand("copy");
 
     document.body.removeChild(input);
+
     return success;
   }
 }
@@ -161,6 +175,7 @@ async function shareResult(
         text: `View the Battle of Brawn 2026 ${title} results.`,
         url,
       });
+
       return;
     } catch (error) {
       if (
@@ -198,6 +213,7 @@ async function downloadImage(
     const objectUrl = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
+
     link.href = objectUrl;
     link.download = filename;
 
@@ -207,7 +223,7 @@ async function downloadImage(
 
     URL.revokeObjectURL(objectUrl);
   } catch {
-    // Fallback: open the image for manual saving.
+    // Fallback: open image for manual saving.
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }
@@ -258,44 +274,56 @@ const contributions = [
     title: "Competition Planning & Coordination",
     items: [
       "Competition planning, scheduling, preparation, staff communication, and event logistics",
-      "Coordinating meetings, deliveries, and preparation between competition staff, vendors, and outside partners",
+      "Coordinating meetings, deliveries, preparation, and deadlines between competition staff, vendors, sponsors, and outside partners",
       "Registration and check-in planning, competitor communications, and event-day troubleshooting",
+      "Coordinating event logistics and technical operations for a competition with more than 250 competitors",
+      "Supporting time-sensitive operational decisions, resolving unexpected issues, and maintaining competition timelines under pressure",
     ],
   },
   {
-    title: "Holds, Sponsors & Setting",
+    title: "Holds, Sponsors, Raffles & Setting",
     items: [
       "Hold research, manufacturer outreach, and sponsorship coordination with Secret Holds, Escape Climbing, Trango/FRD, and other suppliers",
+      "Negotiating and securing manufacturer discounts, wholesale pricing, sponsorship contributions, and prize support to reduce event costs",
       "Hold and prize orders, invoices, freight, shipping, delivery scheduling, and tracking",
+      "Raffle planning and coordination, prize sourcing, sponsor outreach, and organization of raffle-related materials and logistics",
+      "Developing and maintaining relationships with climbing hold manufacturers, sponsors, and industry partners",
       "Citizens competition boulder setting, Open forerunning, testing, and setting preparation",
     ],
   },
   {
     title: "Scoring & Technical Development",
     items: [
-      "Jotform digital scorecards, submission instructions, and Google Sheets integration",
-      "Scoring formulas, attempt and flash bonuses, category bump-up rules, and duplicate detection",
-      "Podium standings, full-results sheets, printable scoring reports, and publishing workflows",
-      "Finals projector tools, PowerShell scripts, scoring displays, and Climbing Noise timer setup",
-      "Projector configuration, screen mirroring, display sizing, and technical troubleshooting",
+      "Designing and implementing the Citizens digital scoring workflow using Jotform, Google Sheets, and automated validation",
+      "Developing scoring formulas, attempt and flash bonuses, category bump-up rules, duplicate detection, and tie-review procedures",
+      "Creating real-time submission dashboards, staff review tools, podium standings, and full-results reports",
+      "Processing, validating, and publishing competition scores within 30 minutes of each wave ending, with results available the same day for more than 250 competitors",
+      "Developing printable scoring reports, PDF exports, public results pages, and distribution workflows",
+      "Building and maintaining Finals projector tools, PowerShell scripts, scoring displays, and Climbing Noise timer integration",
+      "Troubleshooting scoring, submission, display, and technical issues in high-pressure, time-sensitive competition environments",
+      "Resolving data discrepancies, duplicate submissions, name corrections, and scoring questions while preserving results integrity",
+      "Configuring projectors, screen mirroring, display sizing, and competition technical equipment",
     ],
   },
   {
     title: "Open Finals & BetaBreakerz Livestream",
     items: [
-      "Livestream planning and coordination with BetaBreakerz",
+      "Livestream planning and production coordination with BetaBreakerz",
       "Meetings, production preparation, and communication between BetaBreakerz and competition staff",
-      "Videographer applications, selection, scheduling, and communications",
+      "Videographer recruitment, applications, selection, scheduling, and communications",
       "Finalist identification, notification emails, and Climbing Noise athlete profile coordination",
       "Commentator communication, livestream displays, projector integration, and audiovisual setup",
+      "Supporting Finals scoring operations and troubleshooting live display or production issues during the event",
     ],
   },
   {
     title: "Check-In & Event Operations",
     items: [
-      "Rock Gym Pro customer and registration comparisons",
-      "Waiver expiration queries, registration checks, and waiver reminder emails",
-      "Staff-facing procedures, check-in support, technical testing, and event troubleshooting",
+      "Rock Gym Pro customer database and competition registration comparisons",
+      "Waiver expiration queries, registration verification, and bulk waiver reminder communications",
+      "Developing staff-facing procedures, check-in tools, and troubleshooting documentation",
+      "Supporting competition-day staff with registration discrepancies, technical problems, and scoring questions",
+      "Coordinating rapid issue resolution across multiple competition waves to minimize delays and maintain publishing deadlines",
     ],
   },
 ];
@@ -439,7 +467,9 @@ export default function BrawnResults2026() {
                 {result.description}
               </p>
 
-              {/* PDF RESULTS */}
+              {/* ==========================================
+                  PDF RESULTS
+              ========================================== */}
 
               {result.fileUrl && (
                 <div
@@ -502,9 +532,9 @@ export default function BrawnResults2026() {
                 </div>
               )}
 
-              {/* ==================================================
+              {/* ==========================================
                   OPEN FINALS SCOREBOARD IMAGE
-              ================================================== */}
+              ========================================== */}
 
               {result.imageUrl && (
                 <div style={{ marginTop: "18px" }}>
@@ -596,9 +626,9 @@ export default function BrawnResults2026() {
                 </div>
               )}
 
-              {/* ==================================================
+              {/* ==========================================
                   ADDITIONAL GOOGLE SHEETS RESULTS
-              ================================================== */}
+              ========================================== */}
 
               {result.links.length > 0 && (
                 <div style={{ marginTop: "20px" }}>
@@ -630,9 +660,9 @@ export default function BrawnResults2026() {
                 </div>
               )}
 
-              {/* ==================================================
+              {/* ==========================================
                   COPY DIRECT RESULTS PAGE LINK
-              ================================================== */}
+              ========================================== */}
 
               <div
                 style={{
@@ -684,7 +714,8 @@ export default function BrawnResults2026() {
           <div className="brawn26-productioncontent">
             <p className="brawn26-productionintro">
               Competition planning, coordination, setting,
-              scoring systems, and event operations.
+              scoring systems, sponsorship development, and
+              event operations for more than 250 competitors.
             </p>
 
             {contributions.map((group) => (
