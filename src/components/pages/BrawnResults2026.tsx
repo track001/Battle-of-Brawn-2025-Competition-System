@@ -11,7 +11,7 @@ import "./BrawnResults2026.css";
  *
  * Open Qualifiers: Published PDF
  * Citizens: Published PDF + Google Sheets
- * Open Finals: Published PNG scoreboard
+ * Open Finals: PNG scoreboard + finalist comparison
  *
  * React: Create React App / react-scripts
  *
@@ -42,16 +42,6 @@ const OPEN_PDF = driveView(OPEN_FILE_ID);
 // ==========================================================
 // FINALS IMAGE — GITHUB PUBLIC FOLDER
 // ==========================================================
-
-/**
- * GitHub repository location:
- *
- * public/results/
- * Battle-of-Brawn-2026-Open-Finals-Results.png
- *
- * Uses PUBLIC_URL for Create React App compatibility.
- * This preserves the GitHub Pages repository base path.
- */
 
 const FINALS_IMAGE_URL =
   `${process.env.PUBLIC_URL || ""}/results/Battle-of-Brawn-2026-Open-Finals-Results.png`;
@@ -84,11 +74,47 @@ type Result = {
   date: string;
   status: string;
   description: string;
+  cutoff?: string;
   fileUrl?: string;
   downloadUrl?: string;
   imageUrl?: string;
   links: ResultLink[];
 };
+
+type Finalist = {
+  name: string;
+  qualifier: number;
+  final: number;
+};
+
+// ==========================================================
+// FINALS COMPARISON
+// ==========================================================
+
+/**
+ * Rankings based on the published Open Qualifier results
+ * and the supplied Finals scoreboard.
+ *
+ * Update here only if an official placement is corrected.
+ */
+
+const womensFinalists: Finalist[] = [
+  { name: "Adriene Clark", qualifier: 1, final: 1 },
+  { name: "Anika Shoemaker", qualifier: 6, final: 2 },
+  { name: "Anna Kelley", qualifier: 4, final: 3 },
+  { name: "Maya Madere", qualifier: 5, final: 4 },
+  { name: "Naomi Lahaie", qualifier: 2, final: 5 },
+  { name: "Alexandra Inghilterra", qualifier: 3, final: 6 },
+];
+
+const mensFinalists: Finalist[] = [
+  { name: "Lukas Gerhardt", qualifier: 1, final: 1 },
+  { name: "Nikolas Karolides", qualifier: 2, final: 2 },
+  { name: "Bayes Wilder", qualifier: 5, final: 3 },
+  { name: "Matthew Sherman", qualifier: 6, final: 4 },
+  { name: "Caden Shrewsbury", qualifier: 4, final: 5 },
+  { name: "Jacob Kelleghan", qualifier: 3, final: 6 },
+];
 
 // ==========================================================
 // RESULTS
@@ -101,7 +127,9 @@ const results: Result[] = [
     date: "Friday, November 6",
     status: "Published",
     description:
-      "Official women's and men's qualifier standings, including finalist placements.",
+      "Women's and men's Open Qualifier standings, including the six finalists from each division.",
+    cutoff:
+      "Qualifier scorecard submission cutoff: Saturday, November 7, 2026 at 9:30 AM.",
     fileUrl: OPEN_PDF,
     downloadUrl: driveDownload(OPEN_FILE_ID),
     links: [],
@@ -110,9 +138,11 @@ const results: Result[] = [
     id: "citizens",
     title: "Citizens",
     date: "Saturday, November 7",
-    status: "Published PDF",
+    status: "Published",
     description:
-      "Youth, Master's, Beginner, Intermediate, and Advanced competition results. The published PDF is a fixed snapshot; the scoring workbook may contain later updates.",
+      "Full competition results for Youth, Master's (40+), Beginner, Intermediate, and Advanced divisions.",
+    cutoff:
+      "Citizens scoring cutoff: Saturday, November 7, 2026 at 6:15 PM.",
     fileUrl: CITIZENS_PDF,
     downloadUrl: driveDownload(CITIZENS_FILE_ID),
     links: [
@@ -132,7 +162,7 @@ const results: Result[] = [
     date: "Saturday, November 7",
     status: "Published",
     description:
-      "Women's and men's Open Finals scoreboard, exported from the PowerShell Finals Projector.",
+      "Overall women's and men's Finals results, with each finalist's qualifying placement shown alongside their final standing.",
     imageUrl: FINALS_IMAGE_URL,
     links: [],
   },
@@ -157,7 +187,6 @@ async function copyLink(url: string): Promise<boolean> {
     input.select();
 
     const success = document.execCommand("copy");
-
     document.body.removeChild(input);
 
     return success;
@@ -195,7 +224,7 @@ async function shareResult(
 }
 
 // ==========================================================
-// DIRECT IMAGE DOWNLOAD
+// IMAGE DOWNLOAD
 // ==========================================================
 
 async function downloadImage(
@@ -223,7 +252,6 @@ async function downloadImage(
 
     URL.revokeObjectURL(objectUrl);
   } catch {
-    // Fallback: open image for manual saving.
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }
@@ -266,6 +294,111 @@ function ActionButton({
 }
 
 // ==========================================================
+// FINALS RANKING COMPARISON
+// ==========================================================
+
+function FinalistComparison({
+  title,
+  finalists,
+  accent,
+}: {
+  title: string;
+  finalists: Finalist[];
+  accent: string;
+}) {
+  return (
+    <div
+      style={{
+        minWidth: 0,
+        flex: "1 1 320px",
+        overflow: "hidden",
+        borderRadius: "6px",
+        border: "1px solid #444",
+      }}
+    >
+      <h4
+        style={{
+          background: accent,
+          color: "#fff",
+          padding: "11px 14px",
+          margin: 0,
+          fontSize: "1rem",
+        }}
+      >
+        {title}
+      </h4>
+
+      <div style={{ overflowX: "auto" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: "0.9rem",
+            textAlign: "left",
+          }}
+        >
+          <thead>
+            <tr>
+              <th style={{ padding: "10px" }}>Athlete</th>
+              <th style={{ padding: "10px", textAlign: "center" }}>
+                Qualifier
+              </th>
+              <th style={{ padding: "10px", textAlign: "center" }}>
+                Finals
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {finalists.map((athlete, index) => (
+              <tr
+                key={athlete.name}
+                style={{
+                  background:
+                    index % 2 === 0
+                      ? "rgba(128,128,128,0.09)"
+                      : "transparent",
+                  borderTop:
+                    "1px solid rgba(128,128,128,0.2)",
+                }}
+              >
+                <td
+                  style={{
+                    padding: "10px",
+                    fontWeight: athlete.final <= 3 ? 700 : 400,
+                  }}
+                >
+                  {athlete.name}
+                </td>
+
+                <td
+                  style={{
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  {athlete.qualifier}
+                </td>
+
+                <td
+                  style={{
+                    padding: "10px",
+                    textAlign: "center",
+                    fontWeight: athlete.final <= 3 ? 700 : 400,
+                  }}
+                >
+                  {athlete.final}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================
 // PLANNING & PRODUCTION
 // ==========================================================
 
@@ -288,7 +421,9 @@ const contributions = [
       "Hold and prize orders, invoices, freight, shipping, delivery scheduling, and tracking",
       "Raffle planning and coordination, prize sourcing, sponsor outreach, and organization of raffle-related materials and logistics",
       "Developing and maintaining relationships with climbing hold manufacturers, sponsors, and industry partners",
-      "Citizens competition boulder setting, Open forerunning, testing, and setting preparation",
+      "Routesetting and forerunning throughout competition week, including Citizens boulders and Open competition preparation",
+      "Testing, adjusting, and refining competition problems for difficulty, movement quality, consistency, and athlete readiness",
+      "Supporting the setting team through ongoing forerunning, feedback, and event preparation",
     ],
   },
   {
@@ -299,7 +434,8 @@ const contributions = [
       "Creating real-time submission dashboards, staff review tools, podium standings, and full-results reports",
       "Processing, validating, and publishing competition scores within 30 minutes of each wave ending, with results available the same day for more than 250 competitors",
       "Developing printable scoring reports, PDF exports, public results pages, and distribution workflows",
-      "Building and maintaining Finals projector tools, PowerShell scripts, scoring displays, and Climbing Noise timer integration",
+      "Writing custom PowerShell scripts to accommodate projector dimensions, manage the Finals scoring display, and support competition presentation requirements",
+      "Building and maintaining Finals projector tools, scoring displays, and Climbing Noise timer integration",
       "Troubleshooting scoring, submission, display, and technical issues in high-pressure, time-sensitive competition environments",
       "Resolving data discrepancies, duplicate submissions, name corrections, and scoring questions while preserving results integrity",
       "Configuring projectors, screen mirroring, display sizing, and competition technical equipment",
@@ -468,6 +604,57 @@ export default function BrawnResults2026() {
               </p>
 
               {/* ==========================================
+                  CITIZENS YOUTH CATEGORY DETAILS
+              ========================================== */}
+
+              {result.id === "citizens" && (
+                <div
+                  style={{
+                    marginTop: "16px",
+                    marginBottom: "16px",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  <strong>Youth categories:</strong>
+
+                  <ul
+                    style={{
+                      marginTop: "6px",
+                      paddingLeft: "22px",
+                    }}
+                  >
+                    <li>
+                      Youth 9 &amp; Under:
+                      combined-gender results and podium.
+                    </li>
+
+                    <li>
+                      Youth 10–14:
+                      separate girls' and boys' results
+                      and podiums.
+                    </li>
+                  </ul>
+                </div>
+              )}
+
+              {/* ==========================================
+                  SUBMISSION CUTOFFS
+              ========================================== */}
+
+              {result.cutoff && (
+                <p
+                  style={{
+                    marginTop: "12px",
+                    marginBottom: "16px",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  {result.cutoff}
+                </p>
+              )}
+
+              {/* ==========================================
                   PDF RESULTS
               ========================================== */}
 
@@ -533,11 +720,69 @@ export default function BrawnResults2026() {
               )}
 
               {/* ==========================================
+                  OPEN FINALS RANKING COMPARISON
+              ========================================== */}
+
+              {result.id === "finals" && (
+                <div style={{ marginTop: "20px" }}>
+                  <h3
+                    style={{
+                      fontSize: "1.15rem",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    Qualifiers vs. Finals
+                  </h3>
+
+                  <p
+                    style={{
+                      fontSize: "0.9rem",
+                      opacity: 0.8,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    A comparison of each finalist's
+                    qualifying rank and overall Finals
+                    placement.
+                  </p>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "16px",
+                    }}
+                  >
+                    <FinalistComparison
+                      title="Women"
+                      finalists={womensFinalists}
+                      accent="#763db4"
+                    />
+
+                    <FinalistComparison
+                      title="Men"
+                      finalists={mensFinalists}
+                      accent="#ba2138"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* ==========================================
                   OPEN FINALS SCOREBOARD IMAGE
               ========================================== */}
 
               {result.imageUrl && (
-                <div style={{ marginTop: "18px" }}>
+                <div style={{ marginTop: "24px" }}>
+                  <h3
+                    style={{
+                      fontSize: "1.15rem",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    Finals Scoreboard
+                  </h3>
+
                   <img
                     src={result.imageUrl}
                     alt="Battle of Brawn 2026 Open Finals scoreboard"
@@ -620,8 +865,8 @@ export default function BrawnResults2026() {
                       marginTop: "12px",
                     }}
                   >
-                    Download the full-resolution Finals scoreboard
-                    image for posting, printing, or sharing.
+                    Download the Finals scoreboard image
+                    for posting, printing, or sharing.
                   </p>
                 </div>
               )}
@@ -661,31 +906,34 @@ export default function BrawnResults2026() {
               )}
 
               {/* ==========================================
-                  COPY DIRECT RESULTS PAGE LINK
+                  SHARE SECTION LINK
+                  Open Qualifiers uses only the PDF link.
               ========================================== */}
 
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "10px",
-                  marginTop: "18px",
-                }}
-              >
-                <ActionButton
-                  label={
-                    copied === `${result.id}-page`
-                      ? "Page Link Copied"
-                      : "Copy Results Page Link"
-                  }
-                  onClick={() =>
-                    handleCopy(
-                      `${result.id}-page`,
-                      getResultPageUrl(result.id)
-                    )
-                  }
-                />
-              </div>
+              {result.id !== "open" && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                    marginTop: "18px",
+                  }}
+                >
+                  <ActionButton
+                    label={
+                      copied === `${result.id}-page`
+                        ? "Section Link Copied"
+                        : "Copy Section Link"
+                    }
+                    onClick={() =>
+                      handleCopy(
+                        `${result.id}-page`,
+                        getResultPageUrl(result.id)
+                      )
+                    }
+                  />
+                </div>
+              )}
             </section>
           );
         })}
@@ -713,9 +961,10 @@ export default function BrawnResults2026() {
 
           <div className="brawn26-productioncontent">
             <p className="brawn26-productionintro">
-              Competition planning, coordination, setting,
-              scoring systems, sponsorship development, and
-              event operations for more than 250 competitors.
+              Competition planning, coordination,
+              routesetting, forerunning, sponsorship
+              development, scoring systems, and event
+              operations for more than 250 competitors.
             </p>
 
             {contributions.map((group) => (
